@@ -73,9 +73,9 @@ void test(const char *fileName) {
         }
     }
 
-    vector<double> parallelAns;
-    vector<double> linearAns;
-    vector<double> eigenAns;
+    vector<double> parallelAns = vector<double>();
+    vector<double> linearAns = vector<double>();
+    vector<double> eigenAns = vector<double>();
 
     int time_elapsed = clock();
     bool parallelHasSolution = parallelGauss(parallelMatrix, rows, cols, parallelAns);
@@ -98,7 +98,10 @@ void test(const char *fileName) {
 
         printf("\n");
 
-        if (!verifySolution(eigenMatrix, eigenFreeTerms, rows, cols-1, parallelAns)) {
+        if (!parallelHasSolution) {
+            printf("Parallel function has found no solution!\n");
+        }
+        else if (!verifySolution(eigenMatrix, eigenFreeTerms, rows, cols-1, parallelAns)) {
             printf("Parallel function has found a wrong solution\n");
 
             for (double i: parallelAns) {
@@ -108,7 +111,10 @@ void test(const char *fileName) {
             printf("\n");
         }
 
-        if (!verifySolution(eigenMatrix, eigenFreeTerms, rows, cols-1, linearAns)) {
+        if (!linearHasSolution) {
+            printf("Linear function has found no solution!\n");
+        }
+        else if (!verifySolution(eigenMatrix, eigenFreeTerms, rows, cols-1, linearAns)) {
             printf("Linear function has found a wrong solution\n");
 
             for (double i: linearAns) {

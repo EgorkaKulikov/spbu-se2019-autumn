@@ -50,7 +50,7 @@ bool linearGauss(double **matrix, int rows, int cols, vector<double> &ans) {
     }
 
     for (int i = boundVars; i < rows; i++) {
-        if (abs(matrix[i][vars]) < epsilon) {
+        if (abs(matrix[i][vars]) > epsilon) {
             return false;
         }
     }
@@ -123,7 +123,7 @@ bool parallelGauss(double **matrix, int rows, int cols, vector<double> &ans) {
     }
 
     for (int i = boundVars; i < rows; i++) {
-        if (abs(matrix[i][vars]) < epsilon) {
+        if (abs(matrix[i][vars]) > epsilon) {
             return false;
         }
     }
@@ -155,9 +155,7 @@ bool parallelGauss(double **matrix, int rows, int cols, vector<double> &ans) {
 using namespace Eigen;
 
 bool eigenGauss(double *matrix, double *freeTerms, int rows, int cols, vector<double> &ans) {
-    Map<MatrixXd> A = Map<MatrixXd>(matrix, rows, cols);
-    A.transposeInPlace(); //this changes the input data but is promised by the Eigen docs to be
-                          //more optimized than transpose().eval() which does not
+    MatrixXd A = Map<MatrixXd>(matrix, cols, rows).transpose().eval();
     Map<VectorXd> b = Map<VectorXd>(freeTerms, rows);
     VectorXd x = A.colPivHouseholderQr().solve(b);
     bool hasSolution = (A*x).isApprox(b, epsilon);
@@ -171,9 +169,10 @@ bool eigenGauss(double *matrix, double *freeTerms, int rows, int cols, vector<do
 }
 
 bool verifySolution(double *matrix, double *freeTerms, int rows, int cols, vector<double> &ans) {
-    Map<MatrixXd> A = Map<MatrixXd>(matrix, rows, cols);
+    MatrixXd A = Map<MatrixXd>(matrix, cols, rows).transpose().eval();
     Map<VectorXd> b = Map<VectorXd>(freeTerms, rows);
     VectorXd x = VectorXd(cols);
+
 
     for (int i = 0; i < cols; i++) {
         x[i] = ans[i];
