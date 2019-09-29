@@ -1,4 +1,4 @@
-program SolverOfSystemOfLinearEquations
+program solveSLAU
   use omp_lib
 
   integer(2) :: size

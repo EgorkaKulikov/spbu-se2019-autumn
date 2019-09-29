@@ -2,18 +2,16 @@
 
 gfortran ./Task.f95 -o par.run -fopenmp
 
-for i in `seq 1 3`; do
-
-    ./par.run < ./test/$i.in > ./test/$i.out
+./par.run < ./test/1.in > ./test/1.out
     
-    cmp ./test/$i.test ./test/$i.out
+cmp ./test/1.test ./test/1.out
 
-    if [ $? -eq 0 ]
+if [ $? -eq 0 ]
 
-        then echo "Test $i passed."
+    then echo "Test passed."
 
-        else echo "Test $i failed.\n."
-    fi
+    else echo "Test failed.\n."
+fi
 
 done
 
