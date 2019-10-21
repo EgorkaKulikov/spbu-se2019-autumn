@@ -5,7 +5,7 @@
 #include "linear_solve.h"
 
 #define MAX_SIZE 1024
-#define NUM_MEASUREMENTS 100
+#define NUM_MEASUREMENTS 10
 #define STEP 4
 #define MAX_DIFF 1e-6
 
@@ -42,7 +42,6 @@ int main(int argc, char *argv[]) {
         double omp_avg_time = 0;
 
         for (int time_meas = 0; time_meas < NUM_MEASUREMENTS; time_meas++) {
-            start = clock();
             int num = 0;
             double *matrix_flat = malloc(size * size * sizeof(double));
             for (int i = 0; i < size; i++){
@@ -51,6 +50,7 @@ int main(int argc, char *argv[]) {
                 }
             }
 
+            start = clock();
             gsl_solve(size, matrix_flat, b, x_expected);
             gsl_avg_time += (double)(clock() - start) / (CLOCKS_PER_SEC * NUM_MEASUREMENTS);
             free(matrix_flat);
