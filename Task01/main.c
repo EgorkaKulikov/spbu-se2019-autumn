@@ -22,7 +22,7 @@ double vectors_max_diff(int size, double *expected_v, double *v) {
 }
 
 int main(int argc, char *argv[]) {
-    time_t start, end;
+    time_t start;
 
     for (int size = STEP; size <= MAX_SIZE; size *= STEP) {
 
