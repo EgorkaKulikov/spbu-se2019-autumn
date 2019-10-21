@@ -1,0 +1,10 @@
+Test status (0 / 1) sequential: 1 omp: 1
+Avg time for        sequential: 0.000001 omp: 0.000003 gsl: 0.000002 | size: 4
+Test status (0 / 1) sequential: 1 omp: 1
+Avg time for        sequential: 0.000012 omp: 0.000014 gsl: 0.000009 | size: 16
+Test status (0 / 1) sequential: 1 omp: 1
+Avg time for        sequential: 0.000519 omp: 0.000512 gsl: 0.000254 | size: 64
+Test status (0 / 1) sequential: 1 omp: 1
+Avg time for        sequential: 0.017242 omp: 0.017017 gsl: 0.035732 | size: 256
+Test status (0 / 1) sequential: 1 omp: 1
+Avg time for        sequential: 1.103623 omp: 1.094972 gsl: 6.427776 | size: 1024

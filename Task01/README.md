@@ -1,0 +1,2 @@
+# Results
+Right now I've only used simd option as it seems to be most suitable, plan to experiment with other variants more. Data was generated randomly. Current results show that simd option doesn't seem to provide a significant increase in performance(avg. in 100 measures with 1024 * 1024 matrix - 1.103623 seconds for omp and 1.094972 seconds for sequential). GSL householder linear system solver consistently performs better.
