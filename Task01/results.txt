@@ -1,0 +1,17 @@
+Calculations are accurate enough for current precision! (0.000001)
+Tested 15 times. Matrix size is 500^2
+Average time of sequential solution is 0.140000
+Average time of parallel (omp) solution is 0.125000
+Average time of linear (gsl) solution is 0.031000
+
+Calculations are accurate enough for current precision! (0.000001)
+Tested 15 times. Matrix size is 1000^2
+Average time of sequential solution is 0.065600
+Average time of parallel (omp) solution is 0.065600
+Average time of linear (gsl) solution is 0.224000
+
+Calculations are accurate enough for current precision! (0.000001)
+Tested 15 times. Matrix size is 2000^2
+Average time of sequential solution is 8.522867
+Average time of parallel (omp) solution is 8.570867
+Average time of linear (gsl) solution is 3.196867
