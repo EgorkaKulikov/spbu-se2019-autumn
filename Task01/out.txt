@@ -1,10 +1,10 @@
 Test status (0 / 1) sequential: 1 omp: 1
-Avg time for        sequential: 0.000006 omp: 0.000012 gsl: 0.000019 | size: 4
+Avg time for        sequential: 0.000008 omp: 0.000006 gsl: 0.000011 | size: 4
 Test status (0 / 1) sequential: 1 omp: 1
-Avg time for        sequential: 0.000069 omp: 0.000076 gsl: 0.000041 | size: 16
+Avg time for        sequential: 0.000060 omp: 0.000061 gsl: 0.000026 | size: 16
 Test status (0 / 1) sequential: 1 omp: 1
-Avg time for        sequential: 0.001123 omp: 0.001097 gsl: 0.000688 | size: 64
+Avg time for        sequential: 0.000867 omp: 0.000827 gsl: 0.000194 | size: 64
+Test status (0 / 1) sequential: 0 omp: 0
+Avg time for        sequential: 0.019216 omp: 0.018533 gsl: 0.003931 | size: 256
 Test status (0 / 1) sequential: 1 omp: 1
-Avg time for        sequential: 0.017140 omp: 0.016898 gsl: 0.037917 | size: 256
-Test status (0 / 1) sequential: 1 omp: 1
-Avg time for        sequential: 1.092238 omp: 1.079640 gsl: 6.815693 | size: 1024
+Avg time for        sequential: 1.228444 omp: 1.193526 gsl: 0.319868 | size: 1024
