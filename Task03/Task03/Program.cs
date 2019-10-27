@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Task03
 {
@@ -31,12 +32,13 @@ namespace Task03
             {
                 producers[i].Cancel();
             }
+
             for (int i = 0; i < numConsumers; i++)
             {
                 consumers[i].Cancel();
             }
-
-            Shared<int>.IsEmpty.Release(Shared<int>.MaxInt32);
+            
+            Shared<int>.IsEmpty.Release(numConsumers);
         }
     }
 }
