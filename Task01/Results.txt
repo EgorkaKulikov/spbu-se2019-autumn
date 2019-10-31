@@ -1,0 +1,25 @@
+100x100
+-O0
+Linear 0.00200
+Parallel 0.00210
+-O3
+Linear 0.00080
+Parallel 0.00155
+
+300x300
+-O0
+Linear 0.05255
+Parallel 0.05375
+-O3
+Linear 0.03525
+Parallel 0.03610
+
+500x500
+-O0
+Linear 0.24475
+Parallel 0.24180
+-O3
+Linear 0.16520
+Parallel 0.16220
+
+//Когда разберусь с MatLab, добавлю результаты оттуда
