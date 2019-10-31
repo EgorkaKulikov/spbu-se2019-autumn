@@ -10,13 +10,12 @@ namespace Task04
     public static class WebLoader
     {
         private const string Pattern = @"<a href=""https?:\/\/[^""]+?"">";
-        
-        private static readonly WebClient client = new WebClient();
-        
+
         public static async Task Load(string reference)
         {
             try
             {
+                using var client = new WebClient();
                 var htmlCode = client.DownloadString(reference);
                 var regex = new Regex(Pattern, RegexOptions.Compiled);
                 var matchedLinks = regex.Matches(htmlCode);
@@ -38,11 +37,12 @@ namespace Task04
             }
         }
 
-        private static Task Subload(string reference)
+        private static async Task Subload(string reference)
         {
             try
             {
-                var sz = client.DownloadStringTaskAsync(reference).Result.Length;
+                using var client = new WebClient();
+                var sz = (await client.DownloadStringTaskAsync(reference)).Length;
                 Console.WriteLine(reference + " has a size of " + sz + " symbols.");
             }
             catch (Exception e)
@@ -51,7 +51,7 @@ namespace Task04
                 Console.WriteLine("Failed to open link" + reference);
             }
 
-            return Task.CompletedTask;
+            //return Task.CompletedTask;
         }
     }
 }
