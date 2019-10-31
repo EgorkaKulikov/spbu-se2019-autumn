@@ -1,0 +1,41 @@
+1)
+all is correct
+results for matrix size 10:
+sequential solution:0.000001 seconds
+parallel solution:0.000001 seconds
+gsl solution:0.000008 seconds
+
+2)
+all is correct
+results for matrix size 50:
+sequential solution:0.000061 seconds
+parallel solution:0.000064 seconds
+gsl solution:0.000055 seconds
+
+3)
+all is correct
+results for matrix size 100:
+sequential solution:0.000430 seconds
+parallel solution:0.000329 seconds
+gsl solution:0.000179 seconds
+
+4)
+all is correct
+results for matrix size 300:
+sequential solution:0.012612 seconds
+parallel solution:0.008012 seconds
+gsl solution:0.003551 seconds
+
+5)
+all is correct
+results for matrix size 500:
+sequential solution:0.053966 seconds
+parallel solution:0.043641 seconds
+gsl solution:0.012255 seconds
+
+6)
+all is correct
+results for matrix size 1000:
+sequential solution:0.431904 seconds
+parallel solution:0.367152 seconds
+gsl solution:0.111633 seconds
