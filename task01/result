@@ -1,0 +1,25 @@
+./test.sh 3
+size 5
+    gsl: 40130
+    seq: 986
+    par: 1866063
+size 10
+    gsl: 57993
+    seq: 2883
+    par: 445745
+size 50
+    gsl: 103813
+    seq: 68411
+    par: 3210791
+size 100
+    gsl: 742551
+    seq: 651867
+    par: 1350836
+size 500
+    gsl: 29900039
+    seq: 29897586
+    par: 16386483
+size 1000
+    gsl: 341709626
+    seq: 350410347
+    par: 308526876
