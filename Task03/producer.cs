@@ -16,12 +16,13 @@ namespace ConsoleApp1
         {
             while (!Data.end_prog)
             {
-                Data.may_change.WaitOne();
+                Data.mutex.WaitOne();
                 put_item();
-                Data.may_change.Release();
+                Data.mutex.ReleaseMutex();
                 Data.full.Release();
                 Thread.Sleep(Data.sleep_time);
             }
+            Data.prod_ended++;
         }
 
         void put_item()

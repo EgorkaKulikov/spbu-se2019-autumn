@@ -17,9 +17,9 @@ namespace ConsoleApp1
             while (!Data.end_prog)
             {
                 Data.full.WaitOne();
-                Data.may_change.WaitOne();
+                Data.mutex.WaitOne();
                 get_item();
-                Data.may_change.Release();
+                Data.mutex.ReleaseMutex();
                 Thread.Sleep(Data.sleep_time);
             }
         }
