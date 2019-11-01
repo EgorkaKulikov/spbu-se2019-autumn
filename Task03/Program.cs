@@ -7,26 +7,25 @@ namespace Task03
 {
   class Program
   {
-    private static Mutex mut = new Mutex();
-    private static Mutex mut2 = new Mutex();
-    private static Mutex mut3 = new Mutex();
+    private static Mutex mList = new Mutex();
+    private static Mutex mCons = new Mutex();
+    private static Mutex mProd = new Mutex();
     private static List<int> list = new List<int>();
-    private static int pauseCons, pauseProd;
+    private static int pauseProd, pauseCons;
+    private static int numOfProd, numOfCons;
 
     public static void Main(string[] args)
     {
-      int numOfProd;
       Console.Write("Enter number of producers: ");
       
-      while (!Int32.TryParse(Console.ReadLine(), out numOfProd) || 0 >= numOfProd)
+      while (false == Int32.TryParse(Console.ReadLine(), out numOfProd) || 0 >= numOfProd)
       {
         Console.Write("Incorrect input. Try natural number: ");
       }
       
-      int numOfCons;
       Console.Write("Enter number of consumers: ");
       
-      while (!Int32.TryParse(Console.ReadLine(), out numOfCons) || 0 >= numOfCons)
+      while (false == Int32.TryParse(Console.ReadLine(), out numOfCons) || 0 >= numOfCons)
       {
         Console.Write("Incorrect input. Try natural number: ");
       }
@@ -59,28 +58,30 @@ namespace Task03
     {
       while (true)
       {
-        mut3.WaitOne();
+        mProd.WaitOne();
         
         if (0 == pauseProd)
         {
           Thread.Sleep(100);
         }
         
-        mut.WaitOne();
+        mList.WaitOne();
         
         var item = list.Count;
         list.Add(item);
         
-        mut.ReleaseMutex();
+        mList.ReleaseMutex();
         
         pauseProd = (pauseProd + 1) % 2;
         Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} write {item}.");
         
-        mut3.ReleaseMutex();
+        mProd.ReleaseMutex();
         
         if (true == ct.IsCancellationRequested)
         {
-          Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} cancalled.");
+          Console.WriteLine($"Thread-producer {Thread.CurrentThread.ManagedThreadId} cancalled.");
+          numOfProd--;
+          
           return 0;
         }
       }
@@ -90,7 +91,7 @@ namespace Task03
     {
       while (true)
       {
-        mut2.WaitOne();
+        mCons.WaitOne();
         
         if (0 == pauseCons)
         {
@@ -99,29 +100,24 @@ namespace Task03
         
         if (0 != list.Count)
         {
-          mut.WaitOne();
+          mList.WaitOne();
         
           var item = list[list.Count - 1];
           list.RemoveAt(list.Count - 1);
           pauseCons = (pauseCons + 1) % 2;
         
-          mut.ReleaseMutex();
+          mList.ReleaseMutex();
         
           Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} read {item}.");
-        
-          mut2.ReleaseMutex();
-        } 
-        else
-        {
-          Thread.Sleep(1000);
-        
-          mut2.ReleaseMutex();
         }
         
-        if (true == ct.IsCancellationRequested)
-        {
-          Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} cancelled.");
+        mCons.ReleaseMutex();
         
+        if (true == ct.IsCancellationRequested && 0 == list.Count && 0 == numOfProd)
+        {
+          Console.WriteLine($"Thread-consumer {Thread.CurrentThread.ManagedThreadId} cancelled.");
+          numOfCons--;
+
           return 0;
         }
       }
