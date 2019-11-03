@@ -4,6 +4,15 @@ function skip {
     awk 'NR > '$1'{print $0}'
 }
 
+function run {
+    res=$(echo "$test" | ./test$1)
+    time=$(echo "$res" | head -1)
+
+    let "time_$1 += time"
+
+    echo "$res" | skip 1 | diff right_answer -
+}
+
 echo "$0 $@"
 
 cnt="$1"
@@ -15,26 +24,14 @@ for size in 5 10 50 100 500 1000; do
     time_seq=0
     time_par=0
 
-    test=$(./gen $size)
-
     for n in $(seq 1 "$cnt"); do
-        res=$(echo "$test" | ./testgsl)
-        time=$(echo "$res" | head -1)
-        let "time_gsl += time"
+        test=$(./gen $size)
 
-        echo "$res" | skip 1 > right_answer
+        echo "$test" | ./testgsl | skip 1 > right_answer
 
-        res=$(echo "$test" | ./testseq)
-        time=$(echo "$res" | head -1)
-        let "time_seq += time"
-
-        echo "$res" | skip 1 | diff right_answer -
-
-        res=$(echo "$test" | ./testpar)
-        time=$(echo "$res" | head -1)
-        let "time_par += time"
-
-        echo "$res" | skip 1 | diff right_answer -
+        run gsl
+        run seq
+        run par
     done
 
     let "time_gsl /= cnt"
