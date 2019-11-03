@@ -20,36 +20,46 @@ namespace Task04 {
             }
 
             foreach (var pair in tasks) {
-                Console.WriteLine($"{pair.Key}: {pair.Value.Result}");
+                Console.WriteLine($"{pair.Key}: {pair.Value.GetAwaiter().GetResult()}");
             }
         }
 
         private static async Task<String> GetInfoAsync(String uri) {
             var client = new WebClient();
+            String data;
 
             try {
-                var symbols = await client.DownloadStringTaskAsync(uri);
-
-                return $"{symbols.Length}";
+                data = await client.DownloadStringTaskAsync(uri);
             } catch {
+                return "oops";
             }
 
-            return "oops";
+            return $"{data.Length}";
         }
 
         private static IEnumerable<String> AllLinksFrom(String uri) {
             var client = new WebClient();
-            var data = client.DownloadString(uri);
 
-            var regex = new Regex("<a (([^>])* )?href=\"https?://\\S*\"", RegexOptions.Compiled);
-            var regex2 = new Regex("https?://\\S*");
-            var matches = regex.Matches(data);
+            String data;
 
-            foreach (var match in matches) {
-                yield return regex2.Match(match.ToString()).ToString().TrimEnd('"');
+            try {
+                data = client.DownloadString(uri);
+            } catch {
+                Console.WriteLine($"{uri} is invalid or an error occurred while downloading the resource.");
+                yield break;
             }
 
-            yield break;;
+            var linkRegex = new Regex("<a (([^>])* )?href=\"https?://\\S*\"");
+            var httpRegex = new Regex("https?://\\S*");
+            
+            var match = linkRegex.Match(data);
+
+            while (match.Success) {
+                yield return httpRegex.Match(match.ToString()).ToString().TrimEnd('"');
+                match = match.NextMatch();
+            }
+
+            yield break;
         }
     }
 }
