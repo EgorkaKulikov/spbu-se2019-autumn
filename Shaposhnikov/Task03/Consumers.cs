@@ -27,15 +27,15 @@ namespace Task03
         {
             while (_isReading)
             {
-                SharedRes<T>.FullBuff.WaitOne();
                 SharedRes<T>.MCons.WaitOne();
 
                 if (!_isReading)
                 {
                     SharedRes<T>.MCons.ReleaseMutex();
-                    SharedRes<T>.FullBuff.Release();
                     break;
                 }
+                
+                SharedRes<T>.FullBuff.WaitOne();
 
                 var data = SharedRes<T>.Buffer[0];
 
