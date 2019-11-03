@@ -1,88 +1,96 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Kruskal
 {
     public class Graph
     {
-        private int N = 0;
-        private List<int[]> graph = new List<int[]>();
+        private int vertexCount = 0;
+        private List<Edge> edge = new List<Edge>();
         private int[] subtreeId;
         private int weightMST = 0;
+        struct Edge
+        {
+            public int vertex1;
+            public int vertex2;
+            public int weight;
+            public Edge(int vertex1, int vertex2, int weight)
+            {
+                this.vertex1 = vertex1;
+                this.vertex2 = vertex2;
+                this.weight = weight;
+            }
+        }
 
-        public void Initialization()
+        public Graph()
         {
             if (Console.IsInputRedirected)
             {
-                N = Convert.ToInt32(Console.ReadLine());
+                vertexCount = Convert.ToInt32(Console.ReadLine());
             }
-
             string s;
-            string[] edges = new string[3];
+            string[] fieldsOfEdge = new string[3];
             int i, j, w;
             if (Console.IsInputRedirected)
             {
                 s = Console.ReadLine();
                 while (s != null)
                 {
-                    edges = s.Split(' ');
-                    i = Convert.ToInt32(edges[0]);
-                    j = Convert.ToInt32(edges[1]);
-                    w = Convert.ToInt32(edges[2]);
-                    if (graph.Count == 0) graph.Add(new int[] {i, j, w});
+                    fieldsOfEdge = s.Split(' ');
+                    i = Convert.ToInt32(fieldsOfEdge[0]);
+                    j = Convert.ToInt32(fieldsOfEdge[1]);
+                    w = Convert.ToInt32(fieldsOfEdge[2]);
+                    if (edge.Count == 0) edge.Add(new Edge(i, j, w));
                     else
                     {
                         int k = 0;
-                        while (graph[k][2] < w && k < graph.Count - 1) k++;
-                        if (graph[graph.Count - 1][2] < w) graph.Add(new int[] {i, j, w});
-                        else graph.Insert(k, new int[] {i, j, w});
+                        while (edge[k].weight < w && k < edge.Count - 1) k++;
+                        if (edge[edge.Count - 1].weight < w) edge.Add(new Edge(i, j, w));
+                        else edge.Insert(k, new Edge(i, j, w));
                     }
-
                     s = Console.ReadLine();
                 }
             }
         }
         public void Kruskal()
         {
-            subtreeId = new int[N];
-            for (int i = 0; i < N; i++) subtreeId[i] = i;
-            for (int k = 0; k < graph.Count; k++)
+            subtreeId = new int[vertexCount];
+            for (int i = 0; i < vertexCount; i++) subtreeId[i] = i;
+            Task task = Task.Run(() =>
             {
-                Thread th = new Thread(new ParameterizedThreadStart(OneThreadKruskal));
-                th.Start(k);
-                th.Join();
-
-            }
-
-            using (StreamWriter file = new StreamWriter("output"))
-            {
-                file.Write(weightMST);
-            }
-        }
-
-        private void OneThreadKruskal(Object ver)
-        {
-            int united = 0;
-            int k = (int) ver;
-            if (united != N)
-            {
-                united = 0;
-                int i = graph[k][0], j = graph[k][1], w = graph[k][2];
-                if (subtreeId[i] != subtreeId[j])
+                for (int k = 0; k < edge.Count; k++)
                 {
-                    weightMST += w;
-                    for (int l = 0; l < N; l++)
+                    int united = 0;
+                    if (united != vertexCount)
                     {
-                        if (subtreeId[l] == subtreeId[j]) united++;
-                        else if (subtreeId[l] == subtreeId[i])
+                        united = 0;
+                        int i = edge[k].vertex1, j = edge[k].vertex2, w = edge[k].weight;
+                        if (subtreeId[i] != subtreeId[j])
                         {
-                            united++;
-                            subtreeId[l] = subtreeId[j];
+                            weightMST += w;
+                            for (int l = 0; l < vertexCount; l++)
+                            {
+                                if (subtreeId[l] == subtreeId[j]) united++;
+                                else if (subtreeId[l] == subtreeId[i])
+                                {
+                                    united++;
+                                    subtreeId[l] = subtreeId[j];
+                                }
+                            }
                         }
                     }
                 }
+            });
+            task.Wait();
+        }
+        public void Output()
+        {
+            using (StreamWriter file = new StreamWriter("output"))
+            {
+                file.Write(weightMST);
             }
         }
     }
@@ -92,8 +100,8 @@ namespace Kruskal
         public static void Main(string[] args)
         {
             Graph graph = new Graph();
-            graph.Initialization();
             graph.Kruskal();
+            graph.Output();
         }
     }
 }

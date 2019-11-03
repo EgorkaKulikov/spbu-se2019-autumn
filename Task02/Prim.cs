@@ -6,23 +6,24 @@ namespace Prim
 {
     public class Graph
     {
-        private int N = 0;
+        private int vertexCount = 0;
         private int[,] adjMatrix;
+        private int weightMST = 0;
 
-        public void AdjacencyMatrix()
+        public Graph()
         {
             if (Console.IsInputRedirected)
             {
-                N = Convert.ToInt32(Console.ReadLine());
+                vertexCount = Convert.ToInt32(Console.ReadLine());
             }
 
-            adjMatrix = new int[N, N];
+            adjMatrix = new int[vertexCount, vertexCount];
             string s;
             string[] edges = new string[3];
             int i, j, w;
-            for (i = 0; i < N; i++)
+            for (i = 0; i < vertexCount; i++)
             {
-                for (j = 0; j < N; j++)
+                for (j = 0; j < vertexCount; j++)
                 {
                     if (i != j) adjMatrix[i, j] = -1;
                     else adjMatrix[i, j] = 0;
@@ -47,17 +48,16 @@ namespace Prim
 
         public void Prim()
         {
-            int weightMST = 0;
             int i, completed = 0;
             ManualResetEvent allDone = new ManualResetEvent(initialState: false);
             int[] min = new int[100];
             Mutex mutex = new Mutex();
-            for (i = 0; i < N - 1; i++)
+            for (i = 0; i < vertexCount - 1; i++)
             {
                 ThreadPool.QueueUserWorkItem(_ =>
                 {
                     min[Thread.CurrentThread.ManagedThreadId] = 0;
-                    for (int j = 0; j < N; j++)
+                    for (int j = 0; j < vertexCount; j++)
                     {
                         if (adjMatrix[i, j] > 0
                             && (adjMatrix[i, j] < min[Thread.CurrentThread.ManagedThreadId]
@@ -67,19 +67,20 @@ namespace Prim
                             if (i < j) adjMatrix[j, i] = adjMatrix[j, i] * (-1);
                         }
                     }
-
                     mutex.WaitOne();
                     weightMST += min[Thread.CurrentThread.ManagedThreadId];
                     mutex.ReleaseMutex();
-
-                    if (Interlocked.Increment(ref completed) == N - 1)
+                    if (Interlocked.Increment(ref completed) == vertexCount - 1)
                     {
                         allDone.Set();
                     }
                 });
             }
-
             allDone.WaitOne();
+        }
+
+        public void Output()
+        {
             using (StreamWriter file = new StreamWriter("output"))
             {
                 file.Write(weightMST);
@@ -92,8 +93,8 @@ namespace Prim
         public static void Main(string[] args)
         {
             Graph graph = new Graph();
-            graph.AdjacencyMatrix();
             graph.Prim();
+            graph.Output();
         }
     }
 }

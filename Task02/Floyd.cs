@@ -6,22 +6,22 @@ namespace Floyd
 {
     public class Graph
     {
-        private int N = 0;
+        private int vertexCount = 0;
         private int[,] adjMatrix;
         
-        public void AdjacencyMatrix()
+        public Graph()
         {
             if (Console.IsInputRedirected)
             {
-                N = Convert.ToInt32(Console.ReadLine());
+                vertexCount = Convert.ToInt32(Console.ReadLine());
             }
-            adjMatrix = new int[N, N];
+            adjMatrix = new int[vertexCount, vertexCount];
             string s;
             string[] edges = new string[3];
             int i, j, w;
-            for (i = 0; i < N; i++)
+            for (i = 0; i < vertexCount; i++)
             {
-                for (j = 0; j < N; j++)
+                for (j = 0; j < vertexCount; j++)
                 {
                     if (i != j) adjMatrix[i, j] = -1;
                     else adjMatrix[i, j] = 0;
@@ -44,35 +44,49 @@ namespace Floyd
         }
         public void Floyd()
         {
-            for (int k = 0; k < N; k++)
+            int completed = 0;
+            ManualResetEvent allDone = new ManualResetEvent(initialState: false);
+            for (int k = 0; k < vertexCount; k++)
             {
-                Thread th = new Thread(new ParameterizedThreadStart(OneThreadFloyd));
-                th.Start(k);
-                th.Join();
-            }
-            using (StreamWriter file = new StreamWriter("output"))
-            {
-                for (int i = 0; i < N; i++)
+                Thread th = new Thread( vertexBetween =>
                 {
-                    for (int j = 0; j < N; j++)
+                    FindTheShortestPaths(vertexBetween);
+                    if (Interlocked.Increment(ref completed) == vertexCount)
                     {
-                        file.Write(adjMatrix[i,j] + " ");
+                        allDone.Set();
                     }
-                    file.WriteLine();
-                }
+                });
+                th.Start(k);
             }
+            allDone.WaitOne();
         }
-        private void OneThreadFloyd(Object ver)
+        
+        private void FindTheShortestPaths(object vertexBetween)
         {
-            int k = (int)ver;
-            for (int i = 0; i < N; i++)
-            for (int j = 0; j < N; j++)
+            int k = (int)vertexBetween;
+            for (int i = 0; i < vertexCount; i++)
+            for (int j = 0; j < vertexCount; j++)
                 if (adjMatrix[i, j] > 0 && adjMatrix[i, k] > 0 && adjMatrix[k, j] > 0)
                 {
                     adjMatrix[i, j] = (adjMatrix[i, j] <= adjMatrix[i, k] + adjMatrix[k, j])
                         ? adjMatrix[i, j]
                         : adjMatrix[i, k] + adjMatrix[k, j];
                 }
+        }
+
+        public void Output()
+        {
+            using (StreamWriter file = new StreamWriter("output"))
+            {
+                for (int i = 0; i < vertexCount; i++)
+                {
+                    for (int j = 0; j < vertexCount; j++)
+                    {
+                        file.Write(adjMatrix[i,j] + " ");
+                    }
+                    file.WriteLine();
+                }
+            }
         }
     }
 
@@ -81,8 +95,8 @@ namespace Floyd
         public static void Main(string[] args)
         {
             Graph graph = new Graph();
-            graph.AdjacencyMatrix();
             graph.Floyd();
+            graph.Output();
         }
     }
 }
