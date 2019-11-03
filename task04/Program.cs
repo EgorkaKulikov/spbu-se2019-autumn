@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 namespace Task04 {
     class Program {
         static void Main(String[] args) {
-            if (args.Length < 1) {
-                Console.WriteLine("Need more arguments");
+            if (args.Length != 1) {
+                Console.WriteLine("Need exactly one argument: uri");
+                Environment.Exit(1);
             }
 
             var uri = args[0];
