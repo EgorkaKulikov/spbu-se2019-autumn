@@ -22,6 +22,7 @@ namespace ConsoleApp1
                 Data.mutex.ReleaseMutex();
                 Thread.Sleep(Data.sleep_time);
             }
+            Data.cons_ended++;
         }
 
         void get_item()

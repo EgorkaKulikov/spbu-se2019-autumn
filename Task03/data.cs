@@ -14,5 +14,6 @@ namespace ConsoleApp1
         public static int num_prods_cons = 10;
         public static bool end_prog = false;
         public static int prod_ended = 0;
+        public static int cons_ended = 0;
     }
 }

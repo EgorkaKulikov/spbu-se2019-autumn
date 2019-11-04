@@ -35,8 +35,12 @@ namespace ConsoleApp1
             {
                 Data.full.Release();
             }
-            //all consumers are finished
-
+            //waiting for all consumers to end
+            while (Data.cons_ended != Data.num_prods_cons)
+            {
+                Thread.Sleep(100);
+            }
+            Data.buff.Clear();
         }
     }
 }
