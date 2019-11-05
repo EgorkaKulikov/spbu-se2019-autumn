@@ -2,41 +2,58 @@ using System.Collections.Generic;
 using System.Threading;
 
 namespace Task03 {
-    public abstract class AccessPolicy {
-        public abstract void acquire_read();
-        public abstract void release_read();
-        public abstract void acquire_write();
-        public abstract void release_write();
+    public interface IAccessPolicy {
+        void AcquireRead();
+        void ReleaseRead();
+        void AcquireWrite();
+        void ReleaseWrite();
+    }
+
+    public class ListReader<T> {
+        private readonly List<T> data;
+
+        public int Count {
+            get {
+                return data.Count;
+            }
+        }
+
+        public ListReader(List<T> data) {
+            this.data = data;
+        }
+
+        public T Read(int index) {
+            return data[index];
+        }
     }
 
     public class Storage<T> {
 
-        public interface Reader {
-            void doReading(T data);
+        public interface IConsumer {
+            void DoConsuming(ListReader<T> data);
         }
 
-        public interface Writer {
-            void doWriting(T data);
+        public interface IProducer {
+            void DoProducing(List<T> data);
         }
 
-        public void add_reader(Reader reader) {
-            policy.acquire_read();
-            reader.doReading(data);
-            policy.release_read();
+        public void AddConsumer(IConsumer consumer) {
+            policy.AcquireRead();
+            consumer?.DoConsuming(new ListReader<T>(data));
+            policy.ReleaseRead();
         }
 
-        public void add_writer(Writer writer) {
-            policy.acquire_write();
-            writer.doWriting(data);
-            policy.release_write();
+        public void AddProducer(IProducer producer) {
+            policy.AcquireWrite();
+            producer?.DoProducing(data);
+            policy.ReleaseWrite();
         }
 
-        private T data;
-        private AccessPolicy policy;
+        private readonly List<T> data = new List<T>();
+        private readonly IAccessPolicy policy;
 
-        public Storage(AccessPolicy policy, T data) {
+        public Storage(IAccessPolicy policy) {
             this.policy = policy;
-            this.data = data;
         }
     }
 }

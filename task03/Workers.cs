@@ -1,74 +1,67 @@
 using System;
-using System.Threading;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Task03 {
     public abstract class SomeWorker {
-        static public bool need_to_start = false;
-        static public bool need_to_stop = false;
-
-        protected int work_amount = 0;
-        protected Storage<List<String>> storage;
+        protected bool needToStop = false;
         protected int id;
+        protected int workAmount = 0;
+        protected Storage<String> storage;
 
-        protected SomeWorker(int id, Storage<List<String>> storage) {
+        protected SomeWorker(int id, Storage<String> storage) {
             this.id = id;
             this.storage = storage;
         }
 
-        public abstract void doSomething();
+        public abstract void DoWorking();
 
-        public void wait() {
-            while (!need_to_start) {}
-            doSomething();
+        public void Stop() {
+            needToStop = true;
         }
     }
 
-    public class SomeReader: SomeWorker, Storage<List<String>>.Reader {
+    public class SomeConsumer: SomeWorker, Storage<String>.IConsumer {
+        public SomeConsumer(int id, Storage<String> storage): base(id, storage) {}
 
-        public SomeReader(int id, Storage<List<String>> storage): base(id, storage) {}
-
-        public override void doSomething() {
-            while (!need_to_stop) {
-                storage.add_reader(this);
+        public override void DoWorking() {
+            while (!needToStop) {
+                storage.AddConsumer(this);
                 Thread.Sleep(1000);
             }
         }
 
-        private void print(string s) {
-            Console.WriteLine($"From reader {id}: {s}");
+        private void Print(string s) {
+            Console.WriteLine($"From consumer {id}: {s}");
         }
 
-        public void doReading(List<String> data) {
-            print("Time has come");
-
+        public void DoConsuming(ListReader<String> data) {
             for (int i = 0; i < 2; i++) {
-                if (work_amount >= data.Count) {
-                    print($"There is nothing to print");
+                if (workAmount >= data.Count) {
+                    Print($"There is nothing to Print");
                     return;
                 }
 
-                print($"{data[work_amount]}");
-                work_amount++;
+                Print($"{data.Read(workAmount)}");
+                workAmount++;
             }
         }
     }
 
-    public class SomeWriter: SomeWorker, Storage<List<String>>.Writer {
+    public class SomeProducer: SomeWorker, Storage<String>.IProducer {
+        public SomeProducer(int id, Storage<String> storage): base(id, storage) {}
 
-        public SomeWriter(int id, Storage<List<String>> storage): base(id, storage) {}
-
-        public override void doSomething() {
-            while (!need_to_stop) {
-                storage.add_writer(this);
+        public override void DoWorking() {
+            while (!needToStop) {
+                storage.AddProducer(this);
                 Thread.Sleep(1000);
             }
         }
 
-        public void doWriting(List<String> data) {
+        public void DoProducing(List<String> data) {
             for (int i = 0; i < 2; i++) {
-                work_amount++;
-                data.Add($"This is {work_amount} line produced by writer {id}");
+                workAmount++;
+                data.Add($"This is {workAmount} line produced by {id}");
             }
         }
     }
