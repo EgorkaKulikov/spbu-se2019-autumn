@@ -11,7 +11,7 @@ namespace Task03
         public Producer(int newId)
         {
             _id = newId;
-            Console.WriteLine("$Producer #{_id} has joined the session");
+            Console.WriteLine($"Producer #{_id} has joined the session");
             var thread = new Thread(Produce);
             thread.Start();
         }
@@ -21,8 +21,15 @@ namespace Task03
             while (!_cancelled)
             {
                 Shared<T>.ToProduce.WaitOne();
+
+                if (_cancelled)
+                {
+                    Shared<T>.ToProduce.ReleaseMutex();
+                    break;
+                }
+                
                 Shared<T>.Buff.Add(new T());
-                Shared<T>.IsEmpty.Release(1);
+                Shared<T>.isNonEmpty.Release(1);
                 Shared<T>.ToProduce.ReleaseMutex();
                 Console.WriteLine($"Producer #{_id} has produced some data");
                 Shared<T>.RandomAccess.WaitOne();

@@ -19,7 +19,7 @@ namespace Task03
         {
             while (!_cancelled)
             {
-                Shared<T>.IsEmpty.WaitOne();
+                Shared<T>.isNonEmpty.WaitOne();
 
                 if (_cancelled)
                 {

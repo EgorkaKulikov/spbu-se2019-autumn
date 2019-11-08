@@ -12,7 +12,7 @@ namespace Task03
         public static readonly Random RandomGenerator = new Random();
         public static readonly List<T> Buff = new List<T>();
         
-        public static readonly Semaphore IsEmpty = new Semaphore(0, MaxInt32);
+        public static readonly Semaphore isNonEmpty = new Semaphore(0, MaxInt32);
         public static readonly Mutex ToProduce = new Mutex();
         public static readonly Mutex ToConsume = new Mutex();
         public static readonly Mutex RandomAccess = new Mutex();

@@ -33,12 +33,35 @@ namespace Task03
                 producers[i].Cancel();
             }
 
+            var isEmpty = false;
+            
+            while (!isEmpty)
+            {
+                Shared<int>.ToConsume.WaitOne();
+                Shared<int>.ToProduce.WaitOne();
+                if (Shared<int>.Buff.Count == 0)
+                {
+                    isEmpty = true;
+                }
+                
+                Shared<int>.ToConsume.ReleaseMutex();
+                Shared<int>.ToProduce.ReleaseMutex();
+
+                if (!isEmpty)
+                {
+                    Thread.Sleep(Shared<int>.MaxSecTimeout);
+                }
+                
+            }
+            
+            Console.WriteLine("Buffer cleared.");
+
             for (int i = 0; i < numConsumers; i++)
             {
                 consumers[i].Cancel();
             }
             
-            Shared<int>.IsEmpty.Release(numConsumers);
+            Shared<int>.isNonEmpty.Release(numConsumers);
         }
     }
 }
