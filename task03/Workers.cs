@@ -3,66 +3,56 @@ using System.Collections.Generic;
 using System.Threading;
 
 namespace Task03 {
-    public abstract class SomeWorker {
-        protected bool needToStop = false;
-        protected int id;
-        protected int workAmount = 0;
-        protected Storage<String> storage;
+    public abstract class SomeWorker: IWorker {
+        protected static Int32 unhandled = 0;
 
-        protected SomeWorker(int id, Storage<String> storage) {
+        public static Int32 unhandledCount {
+            get {
+                return unhandled;
+            }
+        }
+
+        protected Random random = new Random();
+        protected Int32 id;
+        protected Int32 workAmount = 0;
+        public Boolean isActive {
+            get {
+                return true;
+            }
+        }
+
+        protected SomeWorker(Int32 id) {
             this.id = id;
-            this.storage = storage;
-        }
-
-        public abstract void DoWorking();
-
-        public void Stop() {
-            needToStop = true;
         }
     }
 
-    public class SomeConsumer: SomeWorker, Storage<String>.IConsumer {
-        public SomeConsumer(int id, Storage<String> storage): base(id, storage) {}
+    public class SomeConsumer: SomeWorker, IConsumer<String> {
+        public SomeConsumer(Int32 id): base(id) {}
 
-        public override void DoWorking() {
-            while (!needToStop) {
-                storage.AddConsumer(this);
-                Thread.Sleep(1000);
-            }
-        }
+        public void Consume(String data) {
+            workAmount++;
+            Interlocked.Decrement(ref unhandled);
+            Console.WriteLine($"Consumer {id}: {workAmount} - {data}");
 
-        private void Print(string s) {
-            Console.WriteLine($"From consumer {id}: {s}");
-        }
-
-        public void DoConsuming(ListReader<String> data) {
-            for (int i = 0; i < 2; i++) {
-                if (workAmount >= data.Count) {
-                    Print($"There is nothing to Print");
-                    return;
-                }
-
-                Print($"{data.Read(workAmount)}");
-                workAmount++;
+            if (workAmount % 2 == 0) {
+                Thread.Sleep(random.Next(100, 500));
             }
         }
     }
 
-    public class SomeProducer: SomeWorker, Storage<String>.IProducer {
-        public SomeProducer(int id, Storage<String> storage): base(id, storage) {}
+    public class SomeProducer: SomeWorker, IProducer<String> {
+        public SomeProducer(Int32 id): base(id) {}
 
-        public override void DoWorking() {
-            while (!needToStop) {
-                storage.AddProducer(this);
-                Thread.Sleep(1000);
-            }
-        }
+        public IEnumerable<String> Produce() {
+            Thread.Sleep(random.Next(100, 500));
 
-        public void DoProducing(List<String> data) {
             for (int i = 0; i < 2; i++) {
                 workAmount++;
-                data.Add($"This is {workAmount} line produced by {id}");
+                Interlocked.Increment(ref unhandled);
+                yield return $"{workAmount} line produced by {id}";
             }
+
+            yield break;
         }
     }
 }
