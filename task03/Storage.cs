@@ -18,12 +18,12 @@ namespace Task03 {
     }
 
     public class Storage<T> {
-        private readonly ConcurrentDictionary<IConsumer<T>, Thread> consumers = new ConcurrentDictionary<IConsumer<T>, Thread>();
-        private readonly ConcurrentDictionary<IProducer<T>, Thread> producers = new ConcurrentDictionary<IProducer<T>, Thread>();
         private readonly ConcurrentQueue<T> data = new ConcurrentQueue<T>();
         private readonly Mutex workMutex = new Mutex();
         private readonly SemaphoreSlim productionSemaphore = new SemaphoreSlim(0, Int32.MaxValue);
         private Boolean stopped = false;
+        private Int32 consumersCount = 0;
+        private Int32 producersCount = 0;
 
         public Storage() {
             workMutex.WaitOne();
@@ -40,16 +40,16 @@ namespace Task03 {
 
             stopped = true;
 
-            while (producers.Count != 0);
+            while (producersCount != 0);
 
             while (productionSemaphore.CurrentCount != 0);
 
-            Int32 waitCount = consumers.Count;
+            Int32 waitCount = consumersCount;
             for (int i = 0; i < waitCount; i++) {
                 productionSemaphore.Release();
             }
 
-            while (consumers.Count != 0);
+            while (consumersCount != 0);
         }
 
         private Thread StartWorker(Action action) {
@@ -76,11 +76,10 @@ namespace Task03 {
                     }
                 }
 
-                Thread thread;
-                consumers.TryRemove(consumer, out thread);
+                Interlocked.Decrement(ref consumersCount);
             });
 
-            consumers[consumer] = thread;
+            Interlocked.Increment(ref consumersCount);
         }
 
         public void AddProducer(IProducer<T> producer) {
@@ -94,11 +93,10 @@ namespace Task03 {
                     }
                 }
 
-                Thread thread;
-                producers.TryRemove(producer, out thread);
+                Interlocked.Decrement(ref producersCount);
             });
 
-            producers[producer] = thread;
+            Interlocked.Increment(ref producersCount);
         }
     }
 }
