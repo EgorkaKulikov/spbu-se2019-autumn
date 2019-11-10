@@ -1,23 +1,30 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
-using System;
 
-namespace Task03 {
-    public interface IWorker {
-        Boolean isActive {
+namespace Task03
+{
+    public interface IWorker
+    {
+        Boolean IsActive
+        {
             get;
         }
     }
-    public interface IConsumer<T>: IWorker {
+    public interface IConsumer<T> : IWorker
+    {
         void Consume(T data);
     }
 
-    public interface IProducer<T>: IWorker {
+    public interface IProducer<T> : IWorker
+    {
         IEnumerable<T> Produce();
     }
 
-    public class Storage<T> {
+    public class Storage<T>
+    {
         private readonly ConcurrentQueue<T> data = new ConcurrentQueue<T>();
         private readonly Mutex workMutex = new Mutex();
         private readonly SemaphoreSlim productionSemaphore = new SemaphoreSlim(0, Int32.MaxValue);
@@ -25,35 +32,40 @@ namespace Task03 {
         private Int32 consumersCount = 0;
         private Int32 producersCount = 0;
 
-        public Storage() {
+        public Storage()
+        {
             workMutex.WaitOne();
         }
 
-        public void Start() {
-            if (!stopped) {
-                workMutex.ReleaseMutex();
-            }
+        public void Start()
+        {
+            workMutex.ReleaseMutex();
         }
 
-        public void Stop() {
+        public void Stop()
+        {
             workMutex.WaitOne();
 
             stopped = true;
 
-            while (producersCount != 0);
+            while (producersCount != 0) ;
 
-            while (productionSemaphore.CurrentCount != 0);
+            while (productionSemaphore.CurrentCount != 0) ;
 
-            Int32 waitCount = consumersCount;
-            for (int i = 0; i < waitCount; i++) {
+            foreach (var _ in Enumerable.Range(1, consumersCount))
+            {
                 productionSemaphore.Release();
             }
 
-            while (consumersCount != 0);
+            while (consumersCount != 0) ;
+
+            stopped = false;
         }
 
-        private Thread StartWorker(Action action) {
-            var thread = new Thread(() => {
+        private Thread StartWorker(Action action)
+        {
+            var thread = new Thread(() =>
+            {
                 workMutex.WaitOne();
                 workMutex.ReleaseMutex();
                 action();
@@ -62,16 +74,20 @@ namespace Task03 {
             return thread;
         }
 
-        public void AddConsumer(IConsumer<T> consumer) {
-            var thread = StartWorker(() => {
-                while (consumer.isActive) {
+        public void AddConsumer(IConsumer<T> consumer)
+        {
+            var thread = StartWorker(() =>
+            {
+                while (consumer.IsActive)
+                {
                     productionSemaphore.Wait();
 
-                    T value;
-
-                    if (data.TryDequeue(out value)) {
+                    if (data.TryDequeue(out T value))
+                    {
                         consumer.Consume(value);
-                    } else if (stopped) {
+                    }
+                    else if (stopped)
+                    {
                         break;
                     }
                 }
@@ -82,12 +98,16 @@ namespace Task03 {
             Interlocked.Increment(ref consumersCount);
         }
 
-        public void AddProducer(IProducer<T> producer) {
-            var thread = StartWorker(() => {
-                while (producer.isActive && !stopped) {
+        public void AddProducer(IProducer<T> producer)
+        {
+            var thread = StartWorker(() =>
+            {
+                while (producer.IsActive && !stopped)
+                {
                     var production = producer.Produce();
 
-                    foreach (var value in production) {
+                    foreach (var value in production)
+                    {
                         data.Enqueue(value);
                         productionSemaphore.Release();
                     }
