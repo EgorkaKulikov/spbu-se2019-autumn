@@ -7,21 +7,20 @@ namespace ConsoleApplication1
     class Producer
     {
         private static Mutex _mp = new Mutex();
-        private static int Flag = 0;
+        private static int twoReadings = 0;
         internal void Set(object data)
         {
             Program.Empty.WaitOne();
             _mp.WaitOne();
             Program.Buf.Add(data);
             _mp.ReleaseMutex();
-            if (Flag == 1)
+            if (twoReadings == 1)
             {
                 Thread.Sleep(1000);
                 Program.Full.Release(2);
-                Flag = 0;
+                twoReadings = 0;
             }
-            else Flag = 1;
-            if (Program.fin == 1) Thread.CurrentThread.Abort();
+            else twoReadings = 1;
         }
     }
 
@@ -32,12 +31,14 @@ namespace ConsoleApplication1
         {
             Program.Full.WaitOne();
             _mc.WaitOne();
-            object data = Program.Buf[0];
-            Program.Buf.RemoveAt(0);
+            if (Program.Buf.Count != 0)
+            {
+                object data = Program.Buf[0];
+                Program.Buf.RemoveAt(0);
+                Console.WriteLine("Consumer" + number + " took " + data);
+            }
             Program.Empty.Release();
             _mc.ReleaseMutex();
-            if (Program.fin == 1) Thread.CurrentThread.Abort();
-            Console.WriteLine("Consumer" + number + " took " + data);
         }
     }
     
@@ -46,21 +47,6 @@ namespace ConsoleApplication1
         internal static List<object> Buf = new List<object>();
         internal static Semaphore Full;
         internal static Semaphore Empty;
-        internal static int fin = 0; 
-
-        private static void Keystroke()
-        {
-            ConsoleKeyInfo cki = new ConsoleKeyInfo();
-            while (true)
-            {
-                cki = Console.ReadKey(true);
-                if (cki.KeyChar < 255 && cki.KeyChar > 0)
-                {
-                    fin = 1;
-                    break;
-                }
-            }
-        }
 
         public static void Main(string[] args)
         {
@@ -71,21 +57,48 @@ namespace ConsoleApplication1
                 int cons = Convert.ToInt32 (args[1]);
                 Empty = new Semaphore(0, prod);
                 Full = new Semaphore(0, cons);
-                Thread keystroke = new Thread(new ThreadStart(Keystroke));
-                keystroke.Start();
+                Thread[] threads = new Thread[prod + cons];
+                int completed = 0;
                 for (int i = 0; i < prod; i++)
                 {
                     Producer p = new Producer();
-                    Thread producer = new Thread(new ParameterizedThreadStart(p.Set));
-                    producer.Start(i);
-                }
-                for (int i = 0; i < (cons <= prod ? cons : prod); i++) 
-                { 
-                    Consumer c = new Consumer();
-                    Thread consumer = new Thread(new ParameterizedThreadStart(c.Get));
-                    consumer.Start(i + 1);
+                    threads[i] = new Thread(data =>
+                    {
+                        p.Set(data);
+                        Interlocked.Increment(ref completed);
+                    });
+                    threads[i].Start(i);
                 }
                 Empty.Release(2);
+                for (int i = prod; i < cons + prod; i++) 
+                { 
+                    Consumer c = new Consumer();
+                    threads[i] = new Thread(number =>
+                    {
+                        c.Get(number);
+                        if (Interlocked.Increment(ref completed) >= cons && prod < cons)
+                        {
+                            Empty.WaitOne();
+                            Full.Release();
+                        }
+                    });
+                    threads[i].Start(i - prod + 1);
+                }
+                
+                ConsoleKeyInfo cki = new ConsoleKeyInfo();
+                int finish = 0;
+                while (finish == 0)
+                {
+                    cki = Console.ReadKey(true);
+                    if (cki.KeyChar < 255 && cki.KeyChar > 0)
+                    {
+                        finish = 1;
+                        for (int i = 0; i < prod + cons; i++)
+                        {
+                            threads[i].Abort();
+                        }
+                    }
+                }
             }
         }
     }
