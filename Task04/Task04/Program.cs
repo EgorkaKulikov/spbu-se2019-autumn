@@ -7,7 +7,7 @@ namespace Task04
     {
         static async Task Main(string[] args)
         {
-            await WebLoader.Load("https://fclmnews.ru");
+            await WebLoader.Load("https://fclm.ru");
         }
     }
 }
