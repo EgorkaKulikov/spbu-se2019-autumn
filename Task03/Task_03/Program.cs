@@ -48,6 +48,10 @@ namespace Task_03
             while (_working)
             {
                 Data<T>.empty.WaitOne();
+                if (!_working)
+                {
+                    break;
+                }
                 Data<T>.ConsumerMutex.WaitOne();
 
                 var data = Data<T>.DataList[0];
@@ -92,6 +96,11 @@ namespace Task_03
 
             foreach (var consumer in consumers) consumer.StopWorking();
             foreach (var producer in producers) producer.StopWorking();
+
+            for(int i=0; i < ConsumerNumber; i++)
+            {
+                Data<int>.empty.Release();
+            }
         }
     }
 }
