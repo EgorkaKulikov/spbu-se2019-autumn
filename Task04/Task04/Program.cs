@@ -17,7 +17,7 @@ namespace ConsoleApplication2
             webTask();
         }
 
-        static async Task webTask()
+        static void webTask()
         {
             var page = Client.DownloadString(MainUrl);
             var rgx = new Regex(@"<a href=""http(\S*)");
