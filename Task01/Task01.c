@@ -3,7 +3,7 @@
 #include <omp.h>
 #include <time.h>
 
-void mainElement( int k, int N, double matrix[N][N + 1], int ord[] ){
+void mainElement( int k, int N, float matrix[N][N + 1], int ord[] ){
   int i, j, i_max = k, j_max = k;
   double temp;
 
@@ -33,7 +33,7 @@ void mainElement( int k, int N, double matrix[N][N + 1], int ord[] ){
 	ord[j_max] = i;
 }
 
-void gaussLinear( int N, double matrix[N][N+1]){
+void gaussLinear( int N, float matrix[N][N+1]){
   double ans[N];
   int ord[N];
   int i, j, k;
@@ -67,7 +67,7 @@ void gaussLinear( int N, double matrix[N][N+1]){
   }
 }
 
-void gaussParallel( int N, double matrix[N][N+1]){
+void gaussParallel( int N, float matrix[N][N+1]){
   double ans[N];
   int ord[N];
   int i, j, k;
@@ -98,6 +98,7 @@ void gaussParallel( int N, double matrix[N][N+1]){
   for ( i = 0; i < N; i++ ){
     ans[i] = matrix[i][N];
   }
+  
   for (i = N - 2; i >= 0; i-- ){
     for (j = i + 1; j < N; j++ ){
       ans[i] -= ans[j] * matrix[i][j];
@@ -115,7 +116,7 @@ int main(){
 		printf("Создайте файл test.txt");
 	}
 	fscanf(file, "%i", &N);
-	double matrix[N][N+1];
+	float matrix[N][N+1];
 	
 	for(i=0;i<N;i++){
 		for(j=0;j<N+1;j++){
@@ -128,19 +129,19 @@ int main(){
 	double totalTime;
 	
 	clock_t startTime = clock();
-	for(i=0;i<20;i++){
+	for(i=0;i<50;i++){
 		gaussParallel(N, matrix);
 	}
 	clock_t endTime = clock();
-	totalTime = (double) (endTime - startTime) / CLOCKS_PER_SEC / 20;
+	totalTime = (double) (endTime - startTime) / CLOCKS_PER_SEC / 50;
 	printf("Time Parallel: %f\n", totalTime);
 	
 	startTime = clock();
-	for(i=0;i<20;i++){
+	for(i=0;i<50;i++){
 		gaussLinear(N, matrix);
 	}
 	endTime = clock();
-	totalTime = (double) (endTime - startTime) / CLOCKS_PER_SEC / 20;
+	totalTime = (double) (endTime - startTime) / CLOCKS_PER_SEC / 50;
 	printf("Time Linear: %f\n", totalTime);
 	
 	return(0);
