@@ -22,7 +22,7 @@ namespace Task03
             {
                 bool gotDataFromBuffer = true;
                 Console.WriteLine($"{name} begin do some work.");
-                while (canContinue)
+                while (canContinue || gotDataFromBuffer)
                 {
                     if (gotDataFromBuffer) Console.WriteLine($"{name} want to get data from buffer.");
                     gotDataFromBuffer = GetData();
