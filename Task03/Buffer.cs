@@ -28,5 +28,10 @@ namespace Task03
             mutBuffer.ReleaseMutex();
             return res;
         }
+
+        public bool IsEmpty()
+        {
+            return queue.Count == 0;
+        }
     }
 }
