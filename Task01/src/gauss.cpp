@@ -15,17 +15,17 @@ using std::string;
 using std::to_string;
 
 void sequentialGauss(double **mtx, int size, double *b, double *&ans) {
-    for (int k = 0; k < size - 1; k++) {
+    for (int k = 0; k < size - 1; ++k) {
         double pivot = mtx[k][k];
-        for (int i = k + 1; i < size; i++) {
+        for (int i = k + 1; i < size; ++i) {
             double lik = mtx[i][k] / pivot;
-            for (int j = k; j < size; j++)
+            for (int j = k; j < size; ++j)
                 mtx[i][j] -= lik * mtx[k][j];
             b[i] -= lik * b[k];
         }
     }
 
-    for (int k = size - 1; k >= 0; k--) {
+    for (int k = size - 1; k >= 0; --k) {
         ans[k] = b[k];
         for (int i = k + 1; i < size; i++)
             ans[k] -= mtx[k][i] * ans[i];
@@ -35,22 +35,22 @@ void sequentialGauss(double **mtx, int size, double *b, double *&ans) {
 
 void parallelGauss(double **mtx, int size, double *b, double *&ans) {
     omp_set_num_threads(omp_get_num_procs());
-    for (int k = 0; k < size - 1; k++) {
+    for (int k = 0; k < size - 1; ++k) {
         double pivot = mtx[k][k];
-        for (int i = k + 1; i < size; i++) {
+        for (int i = k + 1; i < size; ++i) {
             double lik = mtx[i][k] / pivot;
             #pragma omp simd
-            for (int j = k; j < size; j++) {
+            for (int j = k; j < size; ++j) {
                 mtx[i][j] -= lik * mtx[k][j];
             }
             b[i] -= lik * b[k];
         }
     }
 
-    for (int k = size - 1; k >= 0; k--) {
+    for (int k = size - 1; k >= 0; --k) {
         ans[k] = b[k];
         #pragma omp simd
-        for (int i = k + 1; i < size; i++)
+        for (int i = k + 1; i < size; ++i)
             ans[k] -= mtx[k][i] * ans[i];
         ans[k] /= mtx[k][k];
     }
@@ -86,8 +86,8 @@ bool arraysEqual(int size, double *arr1, double *arr2) {
 }
 
 void generateMatrices() {
-    vector<int> sizes = {100, 500, 1000, 2000, 3000
-                        , 4000, 5000, 10000};
+    vector<int> sizes = {100, 500, 1000, 1500, 2000
+                        , 2500, 3000, 3500};
 
     std:: mt19937 gen(time(0));
     for (int size : sizes) {
@@ -96,7 +96,7 @@ void generateMatrices() {
 
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
-                f << gen() % 100 + 1 << " ";
+                f << gen() % 991 + 1 << " ";
             }
         }
     }
