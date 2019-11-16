@@ -20,6 +20,7 @@ namespace Task03
         {
             Thread thread = new Thread(() =>
             {
+                GeneralResources.amountWorkingProducers++;
                 Console.WriteLine($"{name} begin do some work.");
                 while (canContinue)
                 {
@@ -27,6 +28,7 @@ namespace Task03
                     PutData();
                     Console.WriteLine($"{name} put data in buffer.");
                 }
+                GeneralResources.amountWorkingProducers--;
                 Console.WriteLine($"{name} end do some work.");
             });
             thread.Start();
