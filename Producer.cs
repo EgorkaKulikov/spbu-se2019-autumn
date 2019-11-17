@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Configuration;
 using System.Threading;
 
 namespace Task03
 {
     public class Producer<T> where T: new()
     {
-    public volatile bool isCancel = false;
+    private volatile bool _isCancel = false;
 
     public Producer(string name)
     {
@@ -18,23 +15,22 @@ namespace Task03
         thread.Start();
     }
 
-    public void StartWork()
+    private void StartWork()
     {
-        while (!isCancel)
+        while (!_isCancel)
         {
             Shared<T>.mutexProd.WaitOne();
-            Shared<T>.list.Add(new T());
-            Console.WriteLine($"Current list size after adding {Shared<T>.list.Count}");
+            Shared<T>.List.Add(new T());
+            Console.WriteLine($"Current list size after adding {Shared<T>.List.Count}");
             Shared<T>.full.Release();
             Shared<T>.mutexProd.ReleaseMutex();
             Thread.Sleep(2000);
         }
         
     }
-    
     public void SetCancel()
     {
-        isCancel = true;
+        _isCancel = true;
     }
     
     }

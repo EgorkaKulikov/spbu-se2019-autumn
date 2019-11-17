@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Threading;
 
 namespace Task03
 {
@@ -32,7 +30,7 @@ namespace Task03
 
             foreach (var c in consumers)
             {
-                c.setCansel();
+                c.SetCancel();
             }
         }
 

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
 namespace Task03
 {
     public class Consumer<T>
     { 
-        private bool isCansel = false;
+        private volatile bool _isCancel = false;
         
     public Consumer(string name)
     {
@@ -17,22 +15,30 @@ namespace Task03
         thread.Start();
     }
 
-    public void StartWork()
+    private void StartWork()
     {
-        while (!isCansel)
+        while (!_isCancel)
         {
             Shared<T>.mutexCons.WaitOne();
+            
+            if (_isCancel)
+            {
+                Shared<T>.mutexCons.ReleaseMutex();
+                break;
+            }
+
             Shared<T>.full.WaitOne();
-            Shared<T>.list.RemoveAt(Shared<T>.list.Count - 1);
-            Console.WriteLine($"Current list size after removing {Shared<T>.list.Count}");
+            Shared<T>.List.RemoveAt(Shared<T>.List.Count - 1);
+            Console.WriteLine($"Current list size after removing {Shared<T>.List.Count}");
             Shared<T>.mutexCons.ReleaseMutex();
+            
             Thread.Sleep(2000);
         }
     }
 
-    public void setCansel()
+    public void SetCancel()
     {
-        isCansel = true;
+        _isCancel = true;
     }
 
     }
