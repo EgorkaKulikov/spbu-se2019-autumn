@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,17 +12,24 @@ namespace Task04
     {
         static void Main(string[] args)
         {
-            Task.Run(async () => await WebLoader.Start()).GetAwaiter().GetResult();
+            var loader = new WebLoader(Console.ReadLine());
+            Task.Run(async () => await loader.Start()).GetAwaiter().GetResult();
             Console.ReadLine();
         }
     }
 
-    public static class WebLoader
+    public class WebLoader
     {
-        public static async Task Start()
+        public readonly string url;
+
+        public WebLoader(string url)
         {
-            string url = Console.ReadLine();
-            string pattern = @"<a href=""https?:\/\/[\w\d.-=?>%\/]+"">";
+            this.url = url;
+        }
+
+        public async Task Start()
+        {
+            string pattern = @"<a href=""https?:\/\/[^""\s]+"">";
 
             var client = new WebClient();
             string webpage;
@@ -53,7 +60,7 @@ namespace Task04
             }
         }
 
-        static async Task LoadLink(string link)
+        private async Task LoadLink(string link)
         {
             try
             {
