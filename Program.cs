@@ -32,6 +32,10 @@ namespace Task03
             {
                 producers[i].Cancel();
             }
+
+            // waiting for all data to be consumed
+            while (Data<int>.buffer.Count != 0) { }
+
             for (int i = 0; i < Config.numConsumers; i++)
             {
                 consumers[i].Cancel();
