@@ -1,0 +1,80 @@
+Test #1 with the matrix of size {10 x 10}
+     GSL: 0.000000
+     SEQ: 0.000000
+     PAR: 0.000000
+
+   with the following result: Correct answer!
+
+
+Test #2 with the matrix of size {25 x 25}
+     GSL: 0.000000
+     SEQ: 0.000000
+     PAR: 0.000000
+
+   with the following result: Correct answer!
+
+
+Test #3 with the matrix of size {50 x 50}
+     GSL: 0.000000
+     SEQ: 0.000000
+     PAR: 0.000000
+
+   with the following result: Correct answer!
+
+
+Test #4 with the matrix of size {100 x 100}
+     GSL: 0.000000
+     SEQ: 0.015000
+     PAR: 0.000000
+
+   with the following result: Correct answer!
+
+
+Test #5 with the matrix of size {175 x 175}
+     GSL: 0.000000
+     SEQ: 0.016000
+     PAR: 0.015000
+
+   with the following result: Correct answer!
+
+
+Test #6 with the matrix of size {250 x 250}
+     GSL: 0.016000
+     SEQ: 0.031000
+     PAR: 0.032000
+
+   with the following result: Correct answer!
+
+
+Test #7 with the matrix of size {325 x 325}
+     GSL: 0.000000
+     SEQ: 0.094000
+     PAR: 0.047000
+
+   with the following result: Correct answer!
+
+
+Test #8 with the matrix of size {500 x 500}
+     GSL: 0.034000
+     SEQ: 0.334000
+     PAR: 0.170000
+
+   with the following result: Correct answer!
+
+
+Test #9 with the matrix of size {750 x 750}
+     GSL: 0.125000
+     SEQ: 1.081000
+     PAR: 0.559000
+
+   with the following result: Correct answer!
+
+
+Test #10 with the matrix of size {1000 x 1000}
+     GSL: 0.297000
+     SEQ: 2.650000
+     PAR: 1.313000
+
+   with the following result: Correct answer!
+
+
