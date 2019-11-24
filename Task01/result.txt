@@ -1,0 +1,63 @@
+optimization = -O0
+matrix size = 250
+running time:
+    sequential: .156992
+    parallel:   .101215
+    eigen:      .210202
+-------------------------
+optimization = -O0
+matrix size = 500
+running time:
+    sequential: 1.245280
+    parallel:   .815969
+    eigen:      1.298008
+-------------------------
+optimization = -O0
+matrix size = 1000
+running time:
+    sequential: 9.918998
+    parallel:   6.463464
+    eigen:      9.570716
+-------------------------
+optimization = -O0
+matrix size = 2000
+running time:
+    sequential: 87.730200
+    parallel:   58.542850
+    eigen:      77.349650
+-------------------------
+optimization = -O3
+matrix size = 250
+running time:
+    sequential: .018286
+    parallel:   .014938
+    eigen:      .005151
+-------------------------
+optimization = -O3
+matrix size = 500
+running time:
+    sequential: .110962
+    parallel:   .100488
+    eigen:      .030611
+-------------------------
+optimization = -O3
+matrix size = 1000
+running time:
+    sequential: .992157
+    parallel:   .945320
+    eigen:      .194909
+-------------------------
+optimization = -O3
+matrix size = 2000
+running time:
+    sequential: 9.320158
+    parallel:   8.131884
+    eigen:      1.785004
+-------------------------
+optimization = -O3
+matrix size = 4000
+running time:
+    sequential: 60.584566
+    parallel:   56.122066
+    eigen:      11.960533
+-------------------------
