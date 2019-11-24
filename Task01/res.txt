@@ -1,0 +1,152 @@
+Matrix size is 10 x 10:
+sequential:
+00:00:00:00.275
+gsl:
+00:00:00:00.266
+parallel:
+00:00:00:00.362
+
+Matrix size is 20 x 20:
+sequential:
+00:00:00:00.485
+gsl:
+00:00:00:00.273
+parallel:
+00:00:00:00.552
+
+Matrix size is 30 x 30:
+sequential:
+00:00:00:00.291
+gsl:
+00:00:00:00.614
+parallel:
+00:00:00:00.301
+
+Matrix size is 40 x 40:
+sequential:
+00:00:00:00.627
+gsl:
+00:00:00:00.435
+parallel:
+00:00:00:00.565
+
+Matrix size is 50 x 50:
+sequential:
+00:00:00:00.419
+gsl:
+00:00:00:00.602
+parallel:
+00:00:00:00.680
+
+Matrix size is 60 x 60:
+sequential:
+00:00:00:00.543
+gsl:
+00:00:00:00.835
+parallel:
+00:00:00:00.696
+
+Matrix size is 70 x 70:
+sequential:
+00:00:00:00.612
+gsl:
+00:00:00:00.535
+parallel:
+00:00:00:00.489
+
+Matrix size is 80 x 80:
+sequential:
+00:00:00:00.634
+gsl:
+00:00:00:00.882
+parallel:
+00:00:00:00.387
+
+Matrix size is 90 x 90:
+sequential:
+00:00:00:00.678
+gsl:
+00:00:00:00.928
+parallel:
+00:00:00:00.549
+
+Matrix size is 100 x 100:
+sequential:
+00:00:00:00.697
+gsl:
+00:00:00:00.489
+parallel:
+00:00:00:01.013
+
+Matrix size is 200 x 200:
+sequential:
+00:00:00:01.278
+gsl:
+00:00:00:01.480
+parallel:
+00:00:00:01.203
+
+Matrix size is 300 x 300:
+sequential:
+00:00:00:02.603
+gsl:
+00:00:00:02.127
+parallel:
+00:00:00:01.826
+
+Matrix size is 400 x 400:
+sequential:
+00:00:00:03.479
+gsl:
+00:00:00:03.470
+parallel:
+00:00:00:02.874
+
+Matrix size is 500 x 500:
+sequential:
+00:00:00:05.159
+gsl:
+00:00:00:05.233
+parallel:
+00:00:00:03.987
+
+Matrix size is 600 x 600:
+sequential:
+00:00:00:07.492
+gsl:
+00:00:00:07.501
+parallel:
+00:00:00:05.504
+
+Matrix size is 700 x 700:
+sequential:
+00:00:00:10.639
+gsl:
+00:00:00:10.519
+parallel:
+00:00:00:07.528
+
+Matrix size is 800 x 800:
+sequential:
+00:00:00:14.587
+gsl:
+00:00:00:14.317
+parallel:
+00:00:00:09.828
+
+Matrix size is 900 x 900:
+sequential:
+00:00:00:19.590
+gsl:
+00:00:00:19.050
+parallel:
+00:00:00:12.449
+
+Matrix size is 1000 x 1000:
+sequential:
+00:00:00:24.674
+gsl:
+00:00:00:24.647
+parallel:
+00:00:00:15.778
+
