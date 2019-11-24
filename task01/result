@@ -1,0 +1,24 @@
+Size 53                                                              Time                     |  CPU time
+     1.  Sequential                                               |  0 s 0 ms 83 mks 147 ns   |  0 s 0 ms 68 mks 40 ns
+     2.  Using simd                                               |  0 s 0 ms 92 mks 719 ns   |  0 s 0 ms 73 mks 40 ns
+     3.  GNU Scientific Library                                   |  0 s 0 ms 166 mks 54 ns   |  0 s 0 ms 129 mks 600 ns
+     4.  Parallel + 2 threads + dynamic sheduling + chunk size 1  |  0 s 0 ms 239 mks 980 ns  |  0 s 0 ms 195 mks 90 ns
+
+Size 103                                                             Time                     |  CPU time
+      1.  Sequential                                              |  0 s 0 ms 266 mks 889 ns  |  0 s 0 ms 248 mks 130 ns
+      2.  Using simd                                              |  0 s 0 ms 297 mks 937 ns  |  0 s 0 ms 280 mks 730 ns
+      3.  Parallel + 2 threads + guided sheduling + chunk size 1  |  0 s 0 ms 331 mks 960 ns  |  0 s 0 ms 328 mks 490 ns
+      4.  GNU Scientific Library                                  |  0 s 0 ms 437 mks 201 ns  |  0 s 0 ms 401 mks 120 ns
+
+Size 503                                                                                   Time                      |  CPU time
+      1.  Parallel + 4 threads + nested parallelism + dynamic sheduling + chunk size 1  |  0 s 11 ms 339 mks 928 ns  |  0 s 41 ms 883 mks 70 ns
+      2.  Sequential                                                                    |  0 s 21 ms 512 mks 139 ns  |  0 s 21 ms 462 mks 100 ns
+      3.  Using simd                                                                    |  0 s 21 ms 888 mks 696 ns  |  0 s 21 ms 841 mks 720 ns
+      4.  GNU Scientific Library                                                        |  0 s 29 ms 750 mks 740 ns  |  0 s 29 ms 678 mks 220 ns
+
+Size 1009                                                              Time                       |  CPU time
+       1.  Parallel + 4 threads + guided sheduling + chunk size 15  |  0 s 241 ms 340 mks 555 ns  |  0 s 947 ms 938 mks 310 ns
+       2.  Sequential                                               |  0 s 293 ms 255 mks 165 ns  |  0 s 289 ms 816 mks 770 ns
+       3.  Using simd                                               |  0 s 294 ms 113 mks 996 ns  |  0 s 290 ms 632 mks 790 ns
+       4.  GNU Scientific Library                                   |  0 s 336 ms 474 mks 549 ns  |  0 s 332 ms 566 mks 240 ns
+
