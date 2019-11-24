@@ -1,0 +1,53 @@
+Size of matrix:50
+Consistent time:
+Avg time: 0
+Max time: 7
+Min time: 0
+Parallel time:
+Avg time: 0
+Max time: 0
+Min time: 0
+Eigen time:
+Avg time: 0
+Max time: 0
+Min time: 0
+Size of matrix:100
+Consistent time:
+Avg time: 3
+Max time: 8
+Min time: 2
+Parallel time:
+Avg time: 3
+Max time: 4
+Min time: 3
+Eigen time:
+Avg time: 1
+Max time: 2
+Min time: 1
+Size of matrix:500
+Consistent time:
+Avg time: 442
+Max time: 1785
+Min time: 288
+Parallel time:
+Avg time: 516
+Max time: 603
+Min time: 495
+Eigen time:
+Avg time: 44
+Max time: 67
+Min time: 40
+Size of matrix:1000
+Consistent time:
+Avg time: 5999
+Max time: 15626
+Min time: 2419
+Parallel time:
+Avg time: 9897
+Max time: 10630
+Min time: 9649
+Eigen time:
+Avg time: 316
+Max time: 348
+Min time: 301
+
