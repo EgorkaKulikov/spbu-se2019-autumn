@@ -1,0 +1,1 @@
+void solve_linear(double* initMatrix, double* initVectorB, double* initVectorX, int size);

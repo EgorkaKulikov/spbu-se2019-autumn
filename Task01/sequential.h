@@ -1,0 +1,1 @@
+void solve_sequential(double* initMatrix, double* initVectorB, double* vectorX, int size);
