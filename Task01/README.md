@@ -1,0 +1,2 @@
+# Results
+Data was generated randomly. Current results indicate that simd option(vectorization) doesn't seem to provide a significant increase in performance(avg. in 50 measurements with 1024 * 1024 matrix - 1.19 seconds for omp and 1.23 seconds for sequential). GSL solver with LU decomposition consistently shows better performance on generated data.
