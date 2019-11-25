@@ -8,8 +8,8 @@ namespace Task04
 {
     internal class Program
     {
-        private string webpage;
-        private async Task DownloadPages()
+        private static string webpage;
+        private static async Task DownloadPages()
         {
             Regex rx = new Regex(@"<a href=\""http(s)://\S+\"">",
                                  RegexOptions.Singleline| RegexOptions.IgnoreCase);
@@ -19,7 +19,7 @@ namespace Task04
                 await Task.Run( () =>
                 {
                     string link = matches[i].Value.Substring(9, matches[i].Value.Length - 11);
-                    WebClient client = new WebClient();
+                    var client = new WebClient();
                     client.DownloadFile(link, "page" + i + ".html");
                     string fileStr = File.ReadAllText("page" + i + ".html");
                     Console.WriteLine(link + ": " + fileStr.Length + " symbols");
@@ -32,11 +32,9 @@ namespace Task04
             if (args.Length < 1) Console.WriteLine("You did not provide a link");
             else
             {
-                Program pr = new Program();
-                WebClient client = new WebClient ();
-                pr.webpage = client.DownloadString (args[0]);
-                Task task = pr.DownloadPages();
-                task.Wait();
+                var client = new WebClient();
+                webpage = client.DownloadString(args[0]);
+                DownloadPages().Wait();
             }
         }
     }
