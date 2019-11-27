@@ -16,24 +16,28 @@ namespace Task03
             );
             while (isRunning)
             {
-                Data<T>.emptySemaphore.WaitOne();
-                Data<T>.mutex.WaitOne();
+                Data<T>.BufMutex.WaitOne();
 
-                //Adding data to queue
-                Data<T>.buffer.Enqueue(new T());
-                Console.WriteLine("Added to queue,  num of elements: {0} current thread id: {1}"
-                    , Data<T>.buffer.Count
-                    , Thread.CurrentThread.ManagedThreadId
-                );
-                Thread.Sleep(Constants.TimeoutMs);
+                if (isRunning)
+                {
+                    //Adding data to queue
+                    Data<T>.Buffer.Enqueue(new T());
+                    Data<T>.WriteCnt++;
+                    Console.WriteLine("Added to queue,  num of elements: {0} current thread id: {1}"
+                        , Data<T>.Buffer.Count
+                        , Thread.CurrentThread.ManagedThreadId
+                    );
 
-                Data<T>.mutex.ReleaseMutex();
-                Data<T>.fullSemaphore.Release();
+                    //Timeout each specified TimeOutIterations
+                    if (0 == Data<T>.WriteCnt % Constants.TimeoutIterations)
+                    {
+                        Thread.Sleep(Constants.TimeoutMs);
+                    }
+                }
+
+                Data<T>.BufMutex.ReleaseMutex();
+                Data<T>.BufSemaphore.Release();
             }
-
-            Console.WriteLine("Producing loop exited, current thread id: {0}"
-                , Thread.CurrentThread.ManagedThreadId
-            );
         }
 
         public void StopRunning()

@@ -15,24 +15,28 @@ namespace Task03
             );
             while (isRunning)
             {
-                Data<T>.fullSemaphore.WaitOne();
-                Data<T>.mutex.WaitOne();
+                Data<T>.BufSemaphore.WaitOne();
+                Data<T>.BufMutex.WaitOne();
 
                 //Reading data from queue
-                Data<T>.buffer.Dequeue();
-                Console.WriteLine("Read from queue, num of elements: {0} current thread id: {1}"
-                    , Data<T>.buffer.Count
-                    , Thread.CurrentThread.ManagedThreadId
-                );
-                Thread.Sleep(Constants.TimeoutMs);
+                if (isRunning)
+                {
+                    Data<T>.ReadCnt++;
+                    Data<T>.Buffer.Dequeue();
+                    Console.WriteLine("Read from queue, num of elements: {0} current thread id: {1}"
+                        , Data<T>.Buffer.Count
+                        , Thread.CurrentThread.ManagedThreadId
+                    );
 
-                Data<T>.emptySemaphore.Release();
-                Data<T>.mutex.ReleaseMutex();
+                    //Timeout each specified TimeOutIterations
+                    if (0 == Data<T>.ReadCnt % Constants.TimeoutIterations)
+                    {
+                        Thread.Sleep(Constants.TimeoutMs);
+                    }
+                }
+
+                Data<T>.BufMutex.ReleaseMutex();
             }
-
-            Console.WriteLine("Consuming loop exited, current thread id: {0}"
-                , Thread.CurrentThread.ManagedThreadId
-            );
         }
 
         public void StopRunning()

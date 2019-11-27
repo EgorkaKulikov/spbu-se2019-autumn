@@ -5,11 +5,11 @@ namespace Task03
 {
     public static class Data<T>
     {
-        public static readonly Queue<T> buffer = new Queue<T>();
-
+        public static readonly Queue<T> Buffer = new Queue<T>();
+        public static int ReadCnt = 0;
+        public static int WriteCnt = 0;
         //Primitives for producer-consumer algorithm
-        public static Semaphore fullSemaphore = new Semaphore(0, Constants.SemaphoreMaxCnt);
-        public static Semaphore emptySemaphore = new Semaphore(Constants.SemaphoreMaxCnt, Constants.SemaphoreMaxCnt);
-        public static Mutex mutex = new Mutex();
+        public static Semaphore BufSemaphore = new Semaphore(0, Constants.SemaphoreMaxCnt);
+        public static Mutex BufMutex = new Mutex();
     }
 }
