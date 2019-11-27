@@ -17,10 +17,10 @@ namespace Task04
             {
                 var responseBody = await client.GetByteArrayAsync(uri);
                 var mainPageData = Encoding.UTF8.GetString(responseBody, 0, responseBody.Length);
-                var mainPageUrls = MatchUrls(mainPageData);
+                var subPageUrls = MatchUrls(mainPageData);
                 var subPageTasks = new List<Task>();
 
-                foreach (var url in mainPageUrls)
+                foreach (var url in subPageUrls)
                 {
                     var subPageLoader = new PageLoader();
                     subPageTasks.Add(subPageLoader.PrintSubPageData(url));
@@ -54,7 +54,7 @@ namespace Task04
         {
             var pageUrls = new List<String>();
             
-            var urlRegex = new Regex(@"<a href=""(http|https)://(\S*)""");
+            var urlRegex = new Regex(Constants.UrlRegexString);
             var urlMatches = urlRegex.Matches(pageData);
 
             foreach (Match urlMatch in urlMatches)
