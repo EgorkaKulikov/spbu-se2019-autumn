@@ -13,7 +13,7 @@ namespace Task04
       Console.Write("Enter web-address: ");
       string inputAddr = Console.ReadLine();
       
-      while (false == Uri.IsWellFormedUriString(inputAddr, UriKind.Absolute))
+      while (!Uri.IsWellFormedUriString(inputAddr, UriKind.Absolute))
       {
         Console.Write("Bad input, try correct URI: ");
         inputAddr = Console.ReadLine();
@@ -24,7 +24,7 @@ namespace Task04
 
     private static async void DownloadMain(string uri)
     {
-      HttpClient client = new HttpClient();
+      var client = new HttpClient();
       Task<String> inputInfo;
       
       try
@@ -38,24 +38,24 @@ namespace Task04
       }
       catch
       {
-        Console.WriteLine($"Another error occured while downloading {uri}.");
+        Console.WriteLine($"Unknown error occured while downloading {uri}.");
         return;
       }
       
-      var inputText = inputInfo.Result;
+      String inputText = inputInfo.Result;
 
-      List<Task> tasks = new List<Task>();
-      List<string> links = new List<string>();
+      var tasks = new List<Task>();
+      var links = new List<string>();
       
       string pattern = "<a href=\"(http(s)?://([\\w-]+.)+[\\w-]+(/[\\w- ./?%&=])?)\\\"";
       
       Match linkBuf = Regex.Match(inputText, pattern);
-      while (true == linkBuf.Success)
+      while (linkBuf.Success)
       {
         string buf = linkBuf.Groups[1].Value;
         
-        if (true == Uri.IsWellFormedUriString(buf, UriKind.Absolute)
-          && !links.Contains(buf))
+        if (Uri.IsWellFormedUriString(buf, UriKind.Absolute)
+        && !links.Contains(buf))
         {
           links.Add(buf);
           tasks.Add(DownloadSub(buf));
@@ -82,7 +82,7 @@ namespace Task04
       }
       catch
       {
-        Console.WriteLine($"Another error occured while downloading {uri}.");
+        Console.WriteLine($"Unknown error occured while downloading {uri}.");
       }
 
       return null;
