@@ -8,7 +8,9 @@ namespace Task04
 {
     class Program
     {
-        static async Task LoadURL(string url)
+        static readonly Regex regex = new Regex(@"<a href=""https?://(\S)*"">");
+
+        private static async Task LoadURL(string url)
         {
             var httpClient = new HttpClient();
             try
@@ -23,7 +25,7 @@ namespace Task04
             }
         }
 
-        static async Task GetContentsAsync(string uri)
+        public static async Task GetContentsAsync(string uri)
         {
             var httpClient = new HttpClient();
             string content;
@@ -37,15 +39,13 @@ namespace Task04
                 return;
             }
 
-            var regex = new Regex(@"<a href=""https?://(\S)*"">");
-
             foreach (Match link in regex.Matches(content))
             {
                 string url = link.Value.Split('"')[1];
                 await LoadURL(url);
             }
         }
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             string baseURL = "https://math.spbu.ru";
             Task.Run(async() => await GetContentsAsync(baseURL)).GetAwaiter().GetResult();
