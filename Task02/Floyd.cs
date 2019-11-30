@@ -8,7 +8,7 @@ public partial class Program
   {
     for (int k = 0; k < size; k++)
     {    
-      ManualResetEvent[] handles = new ManualResetEvent[size];
+      var handles = new ManualResetEvent[size];
       
       for (int j = 0; j < size; j++)
       {
@@ -23,12 +23,13 @@ public partial class Program
 
   private static void stepFloyd(object state)
   {
-    object[] array = state as object[];
-    int k = Convert.ToInt32(array[0]);
-    int j = Convert.ToInt32(array[1]);
-    int size = Convert.ToInt32(array[2]);
-    int[,] matrix = array[3] as int[,];
-    ManualResetEvent handle = array[4] as ManualResetEvent;
+    var array = state as object[];
+    
+    var k      = Convert.ToInt32(array[0]);
+    var j      = Convert.ToInt32(array[1]);
+    var size   = Convert.ToInt32(array[2]);
+    var matrix = array[3] as int[,];
+    var handle = array[4] as ManualResetEvent;
 
     for (int i = 0; i < size; i++)
     {

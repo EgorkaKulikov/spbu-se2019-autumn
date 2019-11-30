@@ -6,13 +6,13 @@ public partial class Program
 {
   private static int Kruskal(Edge[] smezhn, int size)
   {
-    Random rand = new Random();
+    var rand = new Random();
     sort(new object[] {smezhn, 0, smezhn.Length - 1, rand});
 
-    int[] ostov = new int[size];
+    var ostov = new int[size];
 
-    int totalWeight = 0;
-    int newComp = 1;
+    int totalWeight      = 0;
+    int indexOfComponent = 1;
 
     for (int i = 0; i < size; i++)
     {
@@ -23,10 +23,10 @@ public partial class Program
     {
       if (0 == ostov[smezhn[i].from] && 0 == ostov[smezhn[i].to])
       {
-        ostov[smezhn[i].from] = newComp;
-        ostov[smezhn[i].to]   = newComp;
+        ostov[smezhn[i].from] = indexOfComponent;
+        ostov[smezhn[i].to]   = indexOfComponent;
         totalWeight += smezhn[i].weight;
-        newComp++;
+        indexOfComponent++;
         f++;
       }
       else if (ostov[smezhn[i].from] == ostov[smezhn[i].to])
@@ -90,11 +90,12 @@ public partial class Program
 
   private static void sort(object state)
   {
-    object[] container = state as object[];
-    Edge[] array = container[0] as Edge[];
-    int left = Convert.ToInt32(container[1]);
-    int right = Convert.ToInt32(container[2]);
-    Random rand = container[3] as Random;
+    var container = state as object[];
+
+    var array = container[0] as Edge[];
+    var left  = Convert.ToInt32(container[1]);
+    var right = Convert.ToInt32(container[2]);
+    var rand  = container[3] as Random;
 
     if (left < right)
     {
@@ -102,8 +103,8 @@ public partial class Program
       
       if (256 < right - left)
       {
-        Thread leftThr  = new Thread(new ParameterizedThreadStart(sort));
-        Thread rightThr = new Thread(new ParameterizedThreadStart(sort));
+        var leftThr  = new Thread(new ParameterizedThreadStart(sort));
+        var rightThr = new Thread(new ParameterizedThreadStart(sort));
         
         leftThr.Start(new object[] {array, left, mid - 1, rand});
         rightThr.Start(new object[] {array, mid + 1, right, rand});

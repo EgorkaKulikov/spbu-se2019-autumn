@@ -9,7 +9,7 @@ public partial class Program
     string folderPath = @"example/";
     string filePath = string.Concat(folderPath, args[0]);
 
-    if (false == File.Exists(filePath))
+    if (!File.Exists(filePath))
     {
       Console.WriteLine($"There is no file named {args[1]}.");
       return -1;
@@ -24,7 +24,7 @@ public partial class Program
     {
       string vBuf;
       vBuf = sr.ReadLine();
-      List<Edge> smezhn1 = new List<Edge>();
+      var smezhn1 = new List<Edge>();
 
       try
       {

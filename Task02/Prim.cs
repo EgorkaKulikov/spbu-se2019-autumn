@@ -8,16 +8,16 @@ public partial class Program
 {
   private static int Prim(int[,] matrix, int size)
   {
-    Edge[] edges = new Edge[size];
-    int[] nodes = new int[size];
+    var edges = new Edge[size];
+    var nodes = new int[size];
+    
     nodes[0] = 0;
-
     int totalWeight = 0;
 
     for (int i = 1; i < size; i++)
     {
 
-      Task<Edge>[] searches = new Task<Edge>[i];
+      var searches = new Task<Edge>[i];
 
       Parallel.For(0, i, j =>
       {
@@ -26,7 +26,7 @@ public partial class Program
 
       Task<Edge>.WaitAll(searches);
       
-      Edge min = new Edge(0, 0, 0);
+      var min = new Edge(0, 0, 0);
 
       for (int j = 0; j < i; j++)
       {
@@ -63,11 +63,12 @@ public partial class Program
 
   private static Task<Edge> findMin(object state)
   {
-    object[] container = state as object[];
-    int[,] matrix = container[0] as int[,];
-    int size = Convert.ToInt32(container[1]);
-    int node = Convert.ToInt32(container[2]);
-    int[] nodes = container[3] as int[];
+    var container = state as object[];
+    
+    var matrix = container[0] as int[,];
+    var size   = Convert.ToInt32(container[1]);
+    var node   = Convert.ToInt32(container[2]);
+    var nodes  = container[3] as int[];
 
     int index  = 0;
     int weight = 0;
@@ -84,7 +85,7 @@ public partial class Program
       }
     }
 
-    Edge buf = new Edge(node, index, weight);
+    var buf = new Edge(node, index, weight);
     
     return Task<Edge>.FromResult(buf);
   }
