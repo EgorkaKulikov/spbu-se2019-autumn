@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -16,6 +14,7 @@ namespace Task02
         static int[] min;
         static int ans;
         const int Max = 214748364;  //used as infinity
+
         static void Main(string[] args)
         {
             using (StreamReader sr = new StreamReader("test.txt", System.Text.Encoding.Default))
@@ -45,11 +44,14 @@ namespace Task02
                 }
                 numberOfEdges = i;
             }
+
             ThreadPool_Prim();
             Thread_Kruskal();
             Task_Floyd();
+
             Console.Read();
         }
+
         static async void Task_Floyd()
         {
             var tasks = new List<Task>();
@@ -78,6 +80,7 @@ namespace Task02
                 }
             }
         }
+
         static Task Initiate(int i)
         {
             return Task.Run(() =>
@@ -91,6 +94,7 @@ namespace Task02
                 }
             });
         }
+
         static Task Iteration(int k, int i)
         {
             return Task.Run(() =>
@@ -100,26 +104,32 @@ namespace Task02
                         graph[i, j] = graph[i, k] + graph[k, j];
             });
         }
+
         static void Thread_Kruskal()
         {
             ans = 0;
             int threadNum = Environment.ProcessorCount;
             Thread[] threads = new Thread[threadNum];
             int chunkSize = (numberOfVertex + 1) / threadNum;
-            quicksort(edges, 0, numberOfEdges);
             int[] componentNum = new int[numberOfVertex + 1];
+
+            quicksort(edges, 0, numberOfEdges);
+
             for (int i = 1; i < numberOfVertex + 1; i++)
                 componentNum[i] = i;
+
             for (int i = 0; i < numberOfEdges; i++)
             {
                 int start = edges[i, 0];
                 int end = edges[i, 1];
                 int weight = edges[i, 2];
+
                 if (componentNum[start] != componentNum[end])
                 {
                     ans += weight;
                     int a = componentNum[start];
                     int b = componentNum[end];
+
                     for (int j = 0; j < threadNum; j++)
                     {
                         int chunkStart = chunkSize * j;
@@ -137,16 +147,17 @@ namespace Task02
                         });
                         threads[j].Start();
                     }
+
                     for (int j = 0; j < threadNum; j++)
                         threads[j].Join();
                 }
 
             }
+
             using (StreamWriter sw = new StreamWriter("outputKruskal.txt", false, System.Text.Encoding.Default))
-            {
                 sw.WriteLine(ans);
-            }
         }
+
         static void quicksort(int[,] array, int start, int end)
         {
             if (start >= end)
@@ -157,6 +168,7 @@ namespace Task02
             quicksort(array, start, pivot - 1);
             quicksort(array, pivot + 1, end);
         }
+
         static int partition(int[,] array, int start, int end)
         {
             int temp;
@@ -188,35 +200,34 @@ namespace Task02
             array[end, 1] = temp;
             return marker;
         }
+
         static void ThreadPool_Prim()
         {
             ans = 0;
             ThreadPool.SetMaxThreads(numberOfVertex, numberOfVertex);
             min = new int[numberOfVertex + 2];
+
             for (int i = 0; i < numberOfVertex; i++)
-            {
                 ThreadPool.QueueUserWorkItem(FindMin, i);
-            }
+
             while(min[numberOfVertex + 1] != numberOfVertex)
-            {
                 Thread.Sleep(0);
-            }
+
             using (StreamWriter sw = new StreamWriter("outputPrim.txt", false, System.Text.Encoding.Default))
-            {
                 sw.WriteLine(ans);
-            }
         }
+
         static void FindMin(Object stateInfo)
         {
             int i = (int) stateInfo;
             min[Thread.CurrentThread.ManagedThreadId] = int.MaxValue;
+
             for (int j = 0; j < numberOfVertex; j++)
             {
                 if (graph[i, j] > 0 && (graph[i, j] < min[Thread.CurrentThread.ManagedThreadId]))
-                {
                     min[Thread.CurrentThread.ManagedThreadId] = graph[i, j];
-                }
             }
+
             ans += min[Thread.CurrentThread.ManagedThreadId];
             Interlocked.Increment(ref min[numberOfVertex + 1]);
         }
