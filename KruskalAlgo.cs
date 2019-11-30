@@ -9,6 +9,7 @@ namespace Task_02
 {
     internal static class KruskalAlgo
     {
+        
         public static int KruskalFindMstConsistent(List<Edge> graph, int vertex)
         {
             var MST = new List<Edge>();

@@ -35,15 +35,15 @@ namespace Task_02
     internal static Dictionary<int, List<int>> BuildFloydCParallel(Dictionary<int, List<int>> matrix)
     {
         var vertex = matrix.Count;
-        var d = matrix;
-        var chunk = vertex / numOfThreads;
+        var result = matrix;
+        var chunks = vertex / numOfThreads;
         var threads = new Thread[numOfThreads];
 
         for (var threadInd = 0; threadInd < numOfThreads; threadInd++)
         {
-            var start = chunk * threadInd;
-            var end = chunk * (threadInd + 1);
-            if (vertex - start < chunk * 2)
+            var start = chunks * threadInd;
+            var end = chunks * (threadInd + 1);
+            if (vertex - start < chunks * 2)
             {
                 end = vertex;
             }
@@ -56,8 +56,8 @@ namespace Task_02
                     {
                         for (var j = 0; j < vertex; j++)
                         {
-                            if (d[i][k] < INF && d[k][j] < INF)
-                                d[i][j] = Math.Min(d[i][j], d[i][k] + d[k][j]);
+                            if (result[i][k] < INF && result[k][j] < INF)
+                                result[i][j] = Math.Min(result[i][j], result[i][k] + result[k][j]);
                         }
                     }
                 }
@@ -67,7 +67,7 @@ namespace Task_02
         }
         
         foreach (var thread in threads) thread.Join();
-        return d;
+        return result;
     }
     }
 }

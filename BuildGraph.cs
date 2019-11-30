@@ -29,7 +29,6 @@ namespace Task_02
                 return;
             }
             
-            
             var writer = new StreamWriter("graph.txt");
             var generateOfNumber = new Random();
             var graph = new Dictionary<int, List<int>>();
