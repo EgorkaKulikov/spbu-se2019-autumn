@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Task03
 {
-  class Program
+  public static class Program
   {
     private static Mutex mList = new Mutex();
     private static Mutex mCons = new Mutex();
@@ -18,21 +18,21 @@ namespace Task03
     {
       Console.Write("Enter number of producers: ");
       
-      while (false == Int32.TryParse(Console.ReadLine(), out numOfProd) || 0 >= numOfProd)
+      while (!Int32.TryParse(Console.ReadLine(), out numOfProd) || 0 >= numOfProd)
       {
         Console.Write("Incorrect input. Try natural number: ");
       }
       
       Console.Write("Enter number of consumers: ");
       
-      while (false == Int32.TryParse(Console.ReadLine(), out numOfCons) || 0 >= numOfCons)
+      while (!Int32.TryParse(Console.ReadLine(), out numOfCons) || 0 >= numOfCons)
       {
         Console.Write("Incorrect input. Try natural number: ");
       }
 
-      CancellationTokenSource source = new CancellationTokenSource();
-      List<Task> tasks = new List<Task>();
-      TaskFactory factory = new TaskFactory(source.Token);
+      var source  = new CancellationTokenSource();
+      var tasks   = new List<Task>();
+      var factory = new TaskFactory(source.Token);
 
       pauseProd = 0;
       pauseCons = 0;
@@ -67,7 +67,7 @@ namespace Task03
         
         mList.WaitOne();
         
-        var item = list.Count;
+        int item = list.Count;
         list.Add(item);
         
         mList.ReleaseMutex();
@@ -77,7 +77,7 @@ namespace Task03
         
         mProd.ReleaseMutex();
         
-        if (true == ct.IsCancellationRequested)
+        if (ct.IsCancellationRequested)
         {
           Console.WriteLine($"Thread-producer {Thread.CurrentThread.ManagedThreadId} cancalled.");
           numOfProd--;
@@ -113,7 +113,7 @@ namespace Task03
         
         mCons.ReleaseMutex();
         
-        if (true == ct.IsCancellationRequested && 0 == list.Count && 0 == numOfProd)
+        if (ct.IsCancellationRequested && 0 == list.Count && 0 == numOfProd)
         {
           Console.WriteLine($"Thread-consumer {Thread.CurrentThread.ManagedThreadId} cancelled.");
           numOfCons--;
