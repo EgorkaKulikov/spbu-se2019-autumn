@@ -8,13 +8,6 @@ namespace Task02
 {
     public class Edge : IComparable<Edge>
     {
-        public Edge(int startVertex, int endVertex)
-        {
-            this.startVertex = startVertex;
-            this.endVertex = endVertex;
-            weight = Config.emptyEdge;
-        }
-
         public Edge(int startVertex, int endVertex, int weight)
         {
             this.startVertex = startVertex;
