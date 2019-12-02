@@ -47,7 +47,7 @@ namespace Task02
                         }
                         else
                         {
-                            resultMatrix[i, j] = Config.emptyEdge;
+                            resultMatrix[i, j] = graphMatrix[i, j];
                         }
                     }
                 });
