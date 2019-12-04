@@ -15,17 +15,9 @@ namespace Task02
     }
     private static void swap(ref Edge first, ref Edge second)
     {
-      int buf = first.weight;
-      first.weight = second.weight;
-      second.weight = buf;
-
-      buf = first.from;
-      first.from = second.from;
-      second.from = buf;
-
-      buf = first.to;
-      first.to = second.to;
-      second.to = buf;
+      var buf = second;
+      second  = first;
+      first   = buf;
     }
   }
 }
