@@ -4,52 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace Task05
-{/*
-  public static class Program
-  {
-    static void Main()
-    {
-      var cgtree = new CoarseGrainedTree<int>();
-
-      var wholeArray  = new int[] {4, 2, 1, 3, 6, 5, 7, 0};
-      var partRemove = new int[] {4, 7, 2, 0};
-      var others     = new int[] {1, 3, 5, 6};
-
-      Task[] tasks1 = new Task[8];
-      Task[] tasks2 = new Task[4];
-
-      Parallel.For(0, wholeArray.Length, index => 
-      {
-        tasks1[index] = Task.Run( () => {cgtree.insert(wholeArray[index]);});
-      });
-
-      Task.WaitAll(tasks1);
-
-for (int i = 0; i < 8; i ++)
-      {
-        if (
-        cgtree.find(i)
-        ) { Console.WriteLine($"cg found {i}");}
-      }
-
-      Task.WaitAll(tasks1);
-
-      Parallel.For(0, partRemove.Length, index => 
-      {
-        tasks2[index] = Task.Run( () => {cgtree.remove(partRemove[index]);});
-      });
-
-      Task.WaitAll(tasks2);
-
-      for (int i = 0; i < 8; i ++)
-      {
-        if (
-        cgtree.find(i)
-        ) { Console.WriteLine($"cg found {i}");}
-      }
-    }
-  }*/
-
+{
   public class Tree<T> where T : IComparable<T>
   {
     public class Node
