@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
+
 
 namespace Task05
 {
@@ -146,81 +148,89 @@ namespace Task05
 
     internal class Program
     {
+        private static StreamReader file;
+
         private static void Input(ref int[] array, int count)
         {
-            if (Console.IsInputRedirected)
+            for (int i = 0; i < count; i++)
             {
-                for (int i = 0; i < count; i++)
-                {
-                    array[i] = Convert.ToInt32(Console.ReadLine());
-                }
+                array[i] = Convert.ToInt32(file.ReadLine());
             }
         }
 
         public static void Main(string[] args)
         {
-            int insertCount = Convert.ToInt32(Console.ReadLine());
-            int removeCount = Convert.ToInt32(Console.ReadLine());
-            int findCount = Convert.ToInt32(Console.ReadLine());
-            int[] insertKeys = new int [insertCount];
-            int[] removeKeys = new int [removeCount];
-            int[] findKeys = new int [findCount];
-            Input(ref insertKeys, insertCount);
-            Input(ref removeKeys, removeCount);
-            Input(ref findKeys, findCount);
+            if (args.Length > 0)
+            {
+                using (file = File.OpenText(args[0]))
+                {
+                    int insertCount = Convert.ToInt32(Console.ReadLine());
+                    int removeCount = Convert.ToInt32(Console.ReadLine());
+                    int findCount = Convert.ToInt32(Console.ReadLine());
+                    int[] insertKeys = new int [insertCount];
+                    int[] removeKeys = new int [removeCount];
+                    int[] findKeys = new int [findCount];
+                    Input(ref insertKeys, insertCount);
+                    Input(ref removeKeys, removeCount);
+                    Input(ref findKeys, findCount);
 
-            BinaryTree tree = new BinaryTree();
-            int completed = 0;
-            ManualResetEvent allDone = new ManualResetEvent(initialState: false);
-            for (int i = 0; i < insertCount; i++)
-            {
-                var th = new Thread(id =>
-                {
-                    tree.Insert(insertKeys[(int) id]);
-                    if (Interlocked.Increment(ref completed) == insertCount)
+                    BinaryTree tree = new BinaryTree();
+                    int completed = 0;
+                    ManualResetEvent allDone = new ManualResetEvent(initialState: false);
+                    for (int i = 0; i < insertCount; i++)
                     {
-                        allDone.Set();
+                        var th = new Thread(id =>
+                        {
+                            tree.Insert(insertKeys[(int) id]);
+                            if (Interlocked.Increment(ref completed) == insertCount)
+                            {
+                                allDone.Set();
+                            }
+                        });
+                        th.Start(i);
                     }
-                });
-                th.Start(i);
-            }
-            allDone.WaitOne();
-            //tree.Dfs();
-            completed = 0;
-            allDone = new ManualResetEvent(initialState: false);
-            if (removeCount == 0) allDone.Set();
-            for (int i = 0; i < removeCount; i++)
-            {
-                Thread th = new Thread(id =>
-                {
-                    tree.Remove(removeKeys[(int) id]);
-                    if (Interlocked.Increment(ref completed) == removeCount)
+
+                    allDone.WaitOne();
+                    //tree.Dfs();
+                    completed = 0;
+                    allDone = new ManualResetEvent(initialState: false);
+                    if (removeCount == 0) allDone.Set();
+                    for (int i = 0; i < removeCount; i++)
                     {
-                        allDone.Set();
+                        Thread th = new Thread(id =>
+                        {
+                            tree.Remove(removeKeys[(int) id]);
+                            if (Interlocked.Increment(ref completed) == removeCount)
+                            {
+                                allDone.Set();
+                            }
+                        });
+                        th.Start(i);
                     }
-                });
-                th.Start(i);
-            }
-            allDone.WaitOne();
-            /*Console.WriteLine();
-            tree.Dfs();
-            Console.WriteLine();*/
-            completed = 0;
-            allDone = new ManualResetEvent(initialState: false);
-            if (findCount == 0) allDone.Set();
-            for (int i = 0; i < findCount; i++)
-            {
-                Thread th = new Thread(id =>
-                {
-                    tree.Find(findKeys[(int) id]);
-                    if (Interlocked.Increment(ref completed) == findCount)
+
+                    allDone.WaitOne();
+                    /*Console.WriteLine();
+                    tree.Dfs();
+                    Console.WriteLine();*/
+                    completed = 0;
+                    allDone = new ManualResetEvent(initialState: false);
+                    if (findCount == 0) allDone.Set();
+                    for (int i = 0; i < findCount; i++)
                     {
-                        allDone.Set();
+                        Thread th = new Thread(id =>
+                        {
+                            tree.Find(findKeys[(int) id]);
+                            if (Interlocked.Increment(ref completed) == findCount)
+                            {
+                                allDone.Set();
+                            }
+                        });
+                        th.Start(i);
                     }
-                });
-                th.Start(i);
+
+                    allDone.WaitOne();
+                }
             }
-            allDone.WaitOne();
         }
     }
 }
