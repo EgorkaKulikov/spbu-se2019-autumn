@@ -6,10 +6,10 @@ namespace Task02
 {
   public partial class Program
   {
-    private static int evalKruskal(Edge[] smezhn, int size)
+    private static int evalKruskal(Edge[] edgeList, int size)
     {
       var rand = new Random();
-      sort(new object[] {smezhn, 0, smezhn.Length - 1, rand});
+      sort(new object[] {edgeList, 0, edgeList.Length - 1, rand});
 
       var ostov = new int[size];
 
@@ -21,36 +21,36 @@ namespace Task02
         ostov[i] = 0;
       }
 
-      for (int i = 0, f = 0; f < size - 1 && i < smezhn.Length; i++)
+      for (int i = 0, f = 0; f < size - 1 && i < edgeList.Length; i++)
       {
-        if (0 == ostov[smezhn[i].from] && 0 == ostov[smezhn[i].to])
+        if (0 == ostov[edgeList[i].from] && 0 == ostov[edgeList[i].to])
         {
-          ostov[smezhn[i].from] = indexOfComponent;
-          ostov[smezhn[i].to]   = indexOfComponent;
-          totalWeight += smezhn[i].weight;
+          ostov[edgeList[i].from] = indexOfComponent;
+          ostov[edgeList[i].to]   = indexOfComponent;
+          totalWeight += edgeList[i].weight;
           indexOfComponent++;
           f++;
         }
-        else if (ostov[smezhn[i].from] == ostov[smezhn[i].to])
+        else if (ostov[edgeList[i].from] == ostov[edgeList[i].to])
         {
           continue;
         }
-        else if (0 == ostov[smezhn[i].from] && 0 != ostov[smezhn[i].to])
+        else if (0 == ostov[edgeList[i].from] && 0 != ostov[edgeList[i].to])
         {
-          ostov[smezhn[i].from] = ostov[smezhn[i].to];
-          totalWeight += smezhn[i].weight;
+          ostov[edgeList[i].from] = ostov[edgeList[i].to];
+          totalWeight += edgeList[i].weight;
           f++;
         }
-        else if (0 != ostov[smezhn[i].from] && 0 == ostov[smezhn[i].to])
+        else if (0 != ostov[edgeList[i].from] && 0 == ostov[edgeList[i].to])
         {
-          ostov[smezhn[i].to] = ostov[smezhn[i].from];
-          totalWeight += smezhn[i].weight;
+          ostov[edgeList[i].to] = ostov[edgeList[i].from];
+          totalWeight += edgeList[i].weight;
           f++;
         }
-        else if (0 != ostov[smezhn[i].from] && 0 != ostov[smezhn[i].to])
+        else if (0 != ostov[edgeList[i].from] && 0 != ostov[edgeList[i].to])
         {
-          int min = Math.Min(ostov[smezhn[i].from], ostov[smezhn[i].to]);
-          int max = Math.Max(ostov[smezhn[i].from], ostov[smezhn[i].to]);
+          int min = Math.Min(ostov[edgeList[i].from], ostov[edgeList[i].to]);
+          int max = Math.Max(ostov[edgeList[i].from], ostov[edgeList[i].to]);
           
           for (int j = 0; j < size; j++)
           {
@@ -60,7 +60,7 @@ namespace Task02
             } 
           }
 
-          totalWeight += smezhn[i].weight;
+          totalWeight += edgeList[i].weight;
           f++;
         }
       }
