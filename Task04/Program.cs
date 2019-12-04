@@ -19,10 +19,10 @@ namespace Task04
         inputAddr = Console.ReadLine();
       }
       
-      DownloadMain(inputAddr);
+      Task.Run( async () => await DownloadMain(inputAddr)).GetAwaiter().GetResult();
     }
 
-    private static async void DownloadMain(string uri)
+    private static async Task DownloadMain(string uri)
     {
       var client = new HttpClient();
       Task<String> inputInfo;
@@ -65,6 +65,8 @@ namespace Task04
       }
 
       await Task.WhenAll(tasks.ToArray());
+
+      return;
     }
 
     private static Task DownloadSub(string uri)
