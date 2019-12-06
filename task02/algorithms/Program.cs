@@ -31,16 +31,9 @@ namespace Task02
                     {
                         var mst = Kruskal.BuildMst(numberOfVertices, edges);
                         var totalWeight = 0;
-                        mst.Sort((e1, e2) => {
-                            if (e1.first == e2.first) {
-                                return e2.second  - e1.second;
-                            }
-                            return e2.first - e1.first;
-                        });
 
                         foreach (var edge in mst)
                         {
-                            Console.WriteLine($"{edge.first} {edge.second} {edge.weight}");
                             totalWeight += edge.weight;
                         }
 
@@ -51,18 +44,9 @@ namespace Task02
                     {
                         var mst = Prim.BuildMst(numberOfVertices, edges).ToList();
                         var totalWeight = 0;
-                        mst.Sort((e1, e2) =>
-                        {
-                            if (e1.first == e2.first)
-                            {
-                                return e2.second - e1.second;
-                            }
-                            return e2.first - e1.first;
-                        });
 
                         foreach (var edge in mst)
                         {
-                            Console.WriteLine($"{edge.first} {edge.second} {edge.weight}");
                             totalWeight += edge.weight;
                         }
 

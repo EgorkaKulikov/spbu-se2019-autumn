@@ -11,26 +11,19 @@ namespace Task02
         {
             var numberOfThreads = Environment.ProcessorCount;
             var threads = new Thread[numberOfThreads];
-            var chunksSize = edges.Count / numberOfThreads;
-            var chunksBegins = new Int32[numberOfThreads];
-            var chunksEnds = new Int32[numberOfThreads];
-
-            for (Int32 i = 0; i < numberOfThreads; i++)
+            var chunkSize = edges.Count / numberOfThreads;
+            var chunks = Enumerable.Range(0, numberOfThreads).Select((v, i) => i).Select((v, i) =>
             {
-                chunksBegins[i] = chunksSize * i;
-                chunksEnds[i] = chunksBegins[i] + chunksSize;
-            }
-            chunksEnds[numberOfThreads - 1] = edges.Count;
+                if (i == numberOfThreads - 1)
+                {
+                    return Enumerable.Range(chunkSize * i, edges.Count - chunkSize * i);
+                }
+                return Enumerable.Range(chunkSize * i, chunkSize);
+            }).ToArray();
 
-            var usedEdges = new Edge[numberOfVertices];
-            var inMst = new Boolean[numberOfVertices];
+            var usedEdges = Enumerable.Range(0, numberOfVertices).Select(_ => null as Edge).ToArray();
+            var inMst = Enumerable.Range(0, numberOfVertices).Select(_ => false).ToArray();
             var processed = 0;
-
-            for (Int32 i = 0; i < numberOfVertices; i++)
-            {
-                usedEdges[i] = null;
-                inMst[i] = false;
-            }
 
             static Boolean IsLess(Edge edge1, Edge edge2)
             {
@@ -62,18 +55,22 @@ namespace Task02
 
                 for (Int32 i = 0; i < numberOfThreads; i++)
                 {
-                    threads[i] = new Thread(index =>
+                    threads[i] = new Thread(chunk =>
                     {
-                        for (Int32 i = chunksBegins[(int)index]; i < chunksEnds[(int)index]; i++)
+                        foreach (var i in (IEnumerable<Int32>)chunk)
                         {
                             Int32 other;
 
                             if (target == edges[i].first)
                             {
                                 other = edges[i].second;
-                            } else if (target == edges[i].second) {
+                            }
+                            else if (target == edges[i].second)
+                            {
                                 other = edges[i].first;
-                            } else {
+                            }
+                            else
+                            {
                                 continue;
                             }
 
@@ -84,7 +81,7 @@ namespace Task02
                         }
                     });
 
-                    threads[i].Start(i);
+                    threads[i].Start(chunks[i]);
                 }
 
                 for (Int32 i = 0; i < numberOfThreads; i++)
