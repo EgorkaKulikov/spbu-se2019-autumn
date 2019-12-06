@@ -1,4 +1,3 @@
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Task05;
 using System.Threading.Tasks;
@@ -10,7 +9,7 @@ namespace Task05Test
   public class FineGrainedTreeTests
   {
     [TestMethod]
-    public void SearchInEmptyCGTree()
+    public void SearchInEmptyFGTree()
     {
       var fgtree = new FineGrainedTree<int>();
 
@@ -18,7 +17,7 @@ namespace Task05Test
     }
 
     [TestMethod]
-    public void AddSingleRootToCGTree()
+    public void AddSingleRootToFGTree()
     {
         var fgtree = new FineGrainedTree<int>();
 
@@ -28,7 +27,7 @@ namespace Task05Test
     }
 
     [TestMethod]
-    public void AddForkToCGTree()
+    public void AddForkToFGTree()
     {
         var fgtree = new FineGrainedTree<int>();
 
@@ -42,7 +41,7 @@ namespace Task05Test
     }
 
     [TestMethod]
-    public void AddSequenceToCGTree()
+    public void AddSequenceToFGTree()
     {
       var fgtree = new FineGrainedTree<int>();
 
@@ -56,7 +55,7 @@ namespace Task05Test
     }
 
     [TestMethod]
-    public void SequentialAddAndRemoveInCGTree()
+    public void SequentialAddAndRemoveInFGTree()
     {
       var fgtree = new FineGrainedTree<int>();
 
@@ -90,17 +89,17 @@ namespace Task05Test
       }
     }
 
-        [TestMethod]
-    public void ParallelAddAndRemoveInCGTree()
+    [TestMethod]
+    public void ParallelAddAndRemoveInFGTree()
     {
       var fgtree = new FineGrainedTree<int>();
 
-      var wholeArray  = new int[] {4, 2, 1, 3, 6, 5, 7, 0};
+      var wholeArray = new int[] {4, 2, 1, 3, 6, 5, 7, 0};
       var partRemove = new int[] {4, 7, 2, 0};
       var others     = new int[] {1, 3, 5, 6};
 
-      Task[] tasks1 = new Task[8];
-      Task[] tasks2 = new Task[4];
+      var tasks1 = new Task[8];
+      var tasks2 = new Task[4];
 
       Parallel.For(0, wholeArray.Length, index => 
       {
