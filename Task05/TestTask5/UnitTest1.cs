@@ -78,6 +78,20 @@ namespace TestTask5
             });
             Assert.AreEqual("0 1 2 4 5 7 8 10 ", tree.DisplayTree());
         }
+        public void TestRealDelete()
+        {
+            LazyAVL tree = new LazyAVL();
+            Parallel.For(0, 11, (i, state) =>
+            {
+                tree.Add(i);
+            });
+            Parallel.For(1, 4, (i, state) =>
+            {
+                tree.Delete(i * 3);
+            });
+            tree.RealDelete();
+            Assert.AreEqual("0 1 2 4 5 7 8 10 ", tree.DisplayTree());
+        }
         [TestMethod]
         public void TestFind()
         {

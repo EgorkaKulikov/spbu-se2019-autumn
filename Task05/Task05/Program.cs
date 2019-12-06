@@ -8,19 +8,6 @@ namespace Task05
     {
         static void Main(string[] args)
         {
-            CoarseAVL tree = new CoarseAVL();
-            bool[] ans = new bool[2];
-            int z = 0;
-            Parallel.For(0, 4, (i, state) =>
-            {
-                tree.Add(i);
-            });
-            Parallel.For(3, 5, (i, state) =>
-            {
-                ans[z] = tree.Find(i);
-                Console.WriteLine("{0} {1}", ans[z], z);
-                z++;
-            });
             Console.Read();
         }
     }
