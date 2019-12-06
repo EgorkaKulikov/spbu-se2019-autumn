@@ -61,7 +61,12 @@ namespace Task05
             
             public bool verify()
             {
-                mutex.WaitOne();
+                var isUnlocked = mutex.WaitOne(0);
+                if (!isUnlocked)
+                {
+                    return false;
+                }
+                
                 mutex.ReleaseMutex();
                 bool result = true;
                 if (parent != null)
@@ -108,7 +113,11 @@ namespace Task05
         
         public bool verify()
         {
-            rootLock.WaitOne();
+            var isUnlocked = rootLock.WaitOne(0);
+            if (!isUnlocked)
+            {
+                return false;
+            }
             rootLock.ReleaseMutex();
             if (root != null)
             {
@@ -124,33 +133,30 @@ namespace Task05
             Node curNode = root;
             curNode?.mutex.WaitOne();
             rootLock.ReleaseMutex();
-            Node prev = null;
             while (curNode != null)
             {
                 if (curNode.data == value)
                 {
                     curNode.mutex.ReleaseMutex();
-                    prev?.mutex.ReleaseMutex();
                     return true;
                 }
 
                 if (curNode.data < value)
                 {
+                    var tmp = curNode;
                     curNode.right?.mutex.WaitOne();
-                    prev?.mutex.ReleaseMutex();
-                    prev = curNode;
                     curNode = curNode.right;
+                    tmp.mutex.ReleaseMutex();
                 }
                 else
                 {
+                    var tmp = curNode;
                     curNode.left?.mutex.WaitOne();
-                    prev?.mutex.ReleaseMutex();
-                    prev = curNode;
                     curNode = curNode.left;
+                    tmp.mutex.ReleaseMutex();
                 }
             }
             
-            prev?.mutex.ReleaseMutex();
             return false;
         }
 
@@ -166,7 +172,6 @@ namespace Task05
             }
             curNode?.mutex.WaitOne();
             rootLock.ReleaseMutex();
-            Node prev = null;
             while (curNode != null)
             {
                 if (curNode.data <= value)
@@ -175,14 +180,13 @@ namespace Task05
                     {
                         curNode.right = new Node(value, curNode, false);
                         curNode.mutex.ReleaseMutex();
-                        prev?.mutex.ReleaseMutex();
                         return;
                     }
-                    
+
+                    var tmp = curNode;
                     curNode.right?.mutex.WaitOne();
-                    prev?.mutex.ReleaseMutex();
-                    prev = curNode;
                     curNode = curNode.right;
+                    tmp.mutex.ReleaseMutex();
                 }
                 else
                 {
@@ -190,14 +194,13 @@ namespace Task05
                     {
                         curNode.left = new Node(value, curNode, true);
                         curNode.mutex.ReleaseMutex();
-                        prev?.mutex.ReleaseMutex();
                         return;
                     }
-                    
+
+                    var tmp = curNode;
                     curNode.left?.mutex.WaitOne();
-                    prev?.mutex.ReleaseMutex();
-                    prev = curNode;
                     curNode = curNode.left;
+                    tmp.mutex.ReleaseMutex();
                 }
             }
         }

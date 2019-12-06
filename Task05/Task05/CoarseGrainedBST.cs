@@ -99,7 +99,12 @@ namespace Task05
 
         public bool verify()
         {
-            mutex.WaitOne();
+            var isUnlocked = mutex.WaitOne(0);
+            if (!isUnlocked)
+            {
+                return false;
+            }
+            
             mutex.ReleaseMutex();
             if (root != null)
             {
