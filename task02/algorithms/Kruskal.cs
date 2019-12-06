@@ -9,7 +9,7 @@ namespace Task02
     {
         public static List<Edge> BuildMst(Int32 numberOfVertices, List<Edge> edges)
         {
-            ParallelSort(0, edges.Count);
+            ParallelSort(0, edges.Count - 1);
 
             var ranks = Enumerable.Range(0, numberOfVertices).Select(_ => 0).ToArray();
             var setId = Enumerable.Range(0, numberOfVertices).ToArray();
@@ -67,34 +67,34 @@ namespace Task02
             void ParallelSort(Int32 begin, Int32 end)
             {
                 var pivot = Partition(begin, end);
-                if (end - begin > 1000)
+                if (end - begin > 1023)
                 {
-                    var task1 = Task.Run(() => ParallelSort(begin, pivot));
+                    var task1 = Task.Run(() => ParallelSort(begin, pivot - 1));
                     var task2 = Task.Run(() => ParallelSort(pivot + 1, end));
                     Task.WaitAll(task1, task2);
                 }
                 else
                 {
-                    SequentialSort(begin, pivot);
+                    SequentialSort(begin, pivot - 1);
                     SequentialSort(pivot + 1, end);
                 }
             }
 
             void SequentialSort(Int32 begin, Int32 end)
             {
-                if (begin == end) return;
+                if (end < begin) return;
                 var pivot = Partition(begin, end);
-                SequentialSort(begin, pivot);
+                SequentialSort(begin, pivot - 1);
                 SequentialSort(pivot + 1, end);
             }
 
             Int32 Partition(Int32 begin, Int32 end)
             {
                 var x = edges[begin];
-                Swap(begin, end - 1);
+                Swap(begin, end);
 
                 var current = begin;
-                for (var i = begin; i < end - 1; ++i)
+                for (var i = begin; i < end; ++i)
                 {
                     if (edges[i].CompareTo(x) < 0)
                     {
@@ -102,7 +102,8 @@ namespace Task02
                         current++;
                     }
                 }
-                Swap(current, end - 1);
+
+                Swap(current, end);
 
                 return current;
 

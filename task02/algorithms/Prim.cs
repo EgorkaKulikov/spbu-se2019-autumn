@@ -66,10 +66,14 @@ namespace Task02
                     {
                         for (Int32 i = chunksBegins[(int)index]; i < chunksEnds[(int)index]; i++)
                         {
-                            var other = edges[i].OtherThan(target);
+                            Int32 other;
 
-                            if (other < 0)
+                            if (target == edges[i].first)
                             {
+                                other = edges[i].second;
+                            } else if (target == edges[i].second) {
+                                other = edges[i].first;
+                            } else {
                                 continue;
                             }
 

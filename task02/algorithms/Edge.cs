@@ -16,20 +16,5 @@ namespace Task02
         public readonly Int32 weight;
 
         public Int32 CompareTo(Edge edge) => weight.CompareTo(edge.weight);
-
-        public Int32 OtherThan(Int32 index)
-        {
-            if (index == first)
-            {
-                return second;
-            }
-
-            if (index == second)
-            {
-                return first;
-            }
-
-            return -1;
-        }
     }
 }
