@@ -1,0 +1,10 @@
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\obj\Debug\TreeTests.csprojAssemblyReference.cache
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\bin\Debug\TreeTests.dll
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\bin\Debug\TreeTests.pdb
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\bin\Debug\nunit.framework.dll
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\bin\Debug\Task05.exe
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\bin\Debug\Task05.pdb
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\bin\Debug\nunit.framework.xml
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\obj\Debug\TreeTests.csproj.CopyComplete
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\obj\Debug\TreeTests.dll
+C:\Users\Alexey\RiderProjects\ParProg\Task05\TreeTests\obj\Debug\TreeTests.pdb
