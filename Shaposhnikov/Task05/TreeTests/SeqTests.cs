@@ -10,7 +10,7 @@ namespace TreeTests
     {
         private static readonly Random Rand = new Random();
 
-        private static Tree InitTree(Tree tree)
+        private static Tree InitRandomTree(Tree tree)
         {
             const int min = 0;
             const int max = 10000;
@@ -43,7 +43,7 @@ namespace TreeTests
         {
             var tree = new Tree();
             tree.CoarseInsert(100); //root
-            tree = InitTree(tree);
+            tree = InitRandomTree(tree);
             
             tree.CoarseInsert(99);
             tree.CoarseInsert(101);
@@ -76,8 +76,10 @@ namespace TreeTests
                 .OrderBy(a => Guid.NewGuid())
                 .ToList();
             inputData.ForEach(data => tree.CoarseInsert(data));
+            
             var toRemoveData = Enumerable.Range(20, 80).ToList();
             toRemoveData.ForEach(data => tree.CoarseRemove(data));
+            
             for (var i = 20; i < 80; i++)
             {
                 Assert.False(tree.CoarseFind(i)?.Value == i);
@@ -87,7 +89,7 @@ namespace TreeTests
         [Test]
         public void RelationAssert()
         {
-            var tree = InitTree(new Tree());
+            var tree = InitRandomTree(new Tree());
             
             Traverse(tree.Root, node =>
             {

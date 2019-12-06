@@ -97,14 +97,14 @@ namespace Task05
             }
             else
             {
-                if (prev != null && value < prev.Value)
+                Debug.Assert(prev != null, nameof(prev) + " != null");
+                if (value < prev.Value)
                 {
                     prev.Left = newNode;
                     prev.Mtx.ReleaseMutex();
                 }
                 else 
                 {
-                    if (prev == null) return;
                     prev.Right = newNode;
                     prev.Mtx.ReleaseMutex();
                 }
@@ -152,22 +152,62 @@ namespace Task05
             if (Root == null) return;
             
             Root.Mtx.WaitOne();
-            Root = FineRemove(Root, key);
+            if (Root.Value == key)
+            {
+                var old = Root;
+                
+                if (Root.Left == null)
+                {
+                    Root = Root.Right;
+                    old.Mtx.ReleaseMutex();
+                }
+                else if(Root.Right == null)
+                {
+                    Root = Root.Left;
+                    old.Mtx.ReleaseMutex();
+                }
+                else
+                {
+                    var right = Root.Right;
+                    right.Mtx.WaitOne();
+                    
+                    var min = FineMinValue(right);
+                    Root.Value = min;
+                    
+                    if (min != right.Value)
+                    {
+                        old.Mtx.ReleaseMutex();
+                        FineRemove(right, min);
+                    }
+                    else
+                    {
+                        Root.Right = right.Right;
+                        right.Mtx.ReleaseMutex();
+                        Root.Mtx.ReleaseMutex();
+                    }
+                }
+            }
+            else 
+                FineRemove(Root, key);
         }
 
         private static Node CoarseFind(int value, Node parent)
         {
-            if (parent != null)
+            while (true)
             {
-                //nvm it's an IOCCC practice 
-                return value == parent.Value
-                    ? parent
-                    : CoarseFind(value, value < parent.Value 
-                        ? parent.Left 
-                        : parent.Right);
+                if (parent != null)
+                {
+                    //nvm it's an IOCCC practice 
+                    if (value == parent.Value) return parent;
+                    var value1 = value;
+                    parent = value1 < parent.Value
+                        ? parent.Left
+                        : parent.Right;
+                    continue;
+                }
+
+                return null;
             }
-               
-            return null;
         }
 
         private static Node FineFind(int key, Node parent)
@@ -229,62 +269,90 @@ namespace Task05
             return parent;
         }
         
-        private static Node FineRemove(Node parent, int key)
+        private static void FineRemove(Node current, int key)
         {
-            if (parent == null) return null;
-
-            if (key < parent.Value)
+            var parent = current;
+            while (true)
             {
-                var left = parent.Left;
-                if (left == null)
+                if (current.Value == key)
                 {
-                    parent.Mtx.ReleaseMutex();
-                    return null;
-                }
-                
-                left.Mtx.WaitOne();
-                parent.Mtx.ReleaseMutex();
-                parent.Left = FineRemove(left, key);
+                    if (current.Left == null)
+                    {
+                        if (key < parent.Value)
+                            parent.Left = current.Right;
+                        else
+                            parent.Right = current.Right;
+                            
+                        parent.Mtx.ReleaseMutex();
+                        current.Mtx.ReleaseMutex();
 
-                return parent;
-            }
-            else if (key > parent.Value)
-            {
-                var right = parent.Right;
-                if (right == null) 
-                {
-                    parent.Mtx.ReleaseMutex();
-                    return null;
-                }
-                
-                right.Mtx.WaitOne();
-                parent.Mtx.ReleaseMutex();
-                parent.Right = FineRemove(right, key);
+                        return;
+                    }
+                    else if(current.Right == null)
+                    {
+                        if (key < parent.Value)
+                            parent.Left = current.Left;
+                        else
+                            parent.Right = current.Left;
+                            
+                        parent.Mtx.ReleaseMutex();
+                        current.Mtx.ReleaseMutex();
 
-                return parent;
-            }
-            else
-            {
-                if (parent.Right == null)
-                {
-                    parent.Mtx.ReleaseMutex();
-                    return parent.Left;
-                }
-                else if (parent.Left == null)
-                {
-                    parent.Mtx.ReleaseMutex();
-                    return parent.Right;
-                }
-                else
-                {
-                    var right = parent.Right;
+                        return;
+                    }
+                    else
+                    {
+                        var right = current.Right;
+                        right.Mtx.WaitOne();
+                        
+                        var min = FineMinValue(right);
+                        current.Value = min;
                     
-                    right.Mtx.WaitOne();
-                    parent.Value = FineMinValue(right);
+                        if (min != right.Value)
+                        {
+                            current.Mtx.ReleaseMutex();
+                            parent.Mtx.ReleaseMutex();
+                            FineRemove(right, min);
+                            return;
+                        }
+                        else
+                        {
+                            current.Right = right.Right;
+                            right.Mtx.ReleaseMutex();
+                            current.Mtx.ReleaseMutex();
+                            parent.Mtx.ReleaseMutex();
+                            return;
+                        }
+                    }
+                }
+                
+                if (parent != current)
+                {
                     parent.Mtx.ReleaseMutex();
-                    parent.Right = FineRemove(right, parent.Value);
+                    parent = current;
+                }
 
-                    return parent;
+                if (key < current.Value)
+                {
+                    current = current.Left;
+                    if (current == null)
+                    {
+                        parent.Mtx.ReleaseMutex();
+                        return;
+                    }
+
+                    current.Mtx.WaitOne();
+                }
+                else if (key > current.Value)
+                {
+                    current = current.Right;
+                    if (current == null)
+                    {
+                        parent.Mtx.ReleaseMutex();
+                        return;
+                    }
+
+                    current.Mtx.WaitOne();
                 }
             }
         }
@@ -337,6 +405,5 @@ namespace Task05
             return parent == null ? 0
                 : Math.Max(GetDepth(parent.Left), GetDepth(parent.Right)) + 1;
         }
-        
     }
 }
