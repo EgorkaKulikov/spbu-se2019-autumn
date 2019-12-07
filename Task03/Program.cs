@@ -10,17 +10,19 @@ namespace ConsoleApplication1
         private static int twoReadings = 0;
         internal void Set(object data)
         {
-            Program.Empty.WaitOne();
             _mp.WaitOne();
             Program.Buf.Add(data);
-            _mp.ReleaseMutex();
-            if (twoReadings == 1)
+            if (twoReadings % 2 == 1)
             {
                 Thread.Sleep(1000);
-                Program.Full.Release(2);
-                twoReadings = 0;
+                _mp.ReleaseMutex();
+                Program.Sem.Release(2);
             }
-            else twoReadings = 1;
+            else
+            {
+                _mp.ReleaseMutex();
+                Interlocked.Increment(ref twoReadings);
+            }
         }
     }
 
@@ -29,7 +31,7 @@ namespace ConsoleApplication1
         private static Mutex _mc = new Mutex();
         internal void Get(object number) 
         {
-            Program.Full.WaitOne();
+            Program.Sem.WaitOne();
             _mc.WaitOne();
             if (Program.Buf.Count != 0)
             {
@@ -37,7 +39,7 @@ namespace ConsoleApplication1
                 Program.Buf.RemoveAt(0);
                 Console.WriteLine("Consumer" + number + " took " + data);
             }
-            Program.Empty.Release();
+            else Program.Sem.Release();
             _mc.ReleaseMutex();
         }
     }
@@ -45,8 +47,7 @@ namespace ConsoleApplication1
     internal class Program
     {
         internal static List<object> Buf = new List<object>();
-        internal static Semaphore Full;
-        internal static Semaphore Empty;
+        internal static Semaphore Sem = new Semaphore(0, Int32.MaxValue);
 
         public static void Main(string[] args)
         {
@@ -55,8 +56,6 @@ namespace ConsoleApplication1
             {
                 int prod = Convert.ToInt32 (args[0]);
                 int cons = Convert.ToInt32 (args[1]);
-                Empty = new Semaphore(0, prod);
-                Full = new Semaphore(0, cons);
                 Thread[] threads = new Thread[prod + cons];
                 int completed = 0;
                 for (int i = 0; i < prod; i++)
@@ -69,7 +68,6 @@ namespace ConsoleApplication1
                     });
                     threads[i].Start(i);
                 }
-                Empty.Release(2);
                 for (int i = prod; i < cons + prod; i++) 
                 { 
                     Consumer c = new Consumer();
@@ -78,8 +76,7 @@ namespace ConsoleApplication1
                         c.Get(number);
                         if (Interlocked.Increment(ref completed) >= cons && prod < cons)
                         {
-                            Empty.WaitOne();
-                            Full.Release();
+                            Sem.Release();
                         }
                     });
                     threads[i].Start(i - prod + 1);
