@@ -61,11 +61,14 @@ namespace Task05
             var oldRoot = subtree.node;
 
             Sync(oldRoot.right);
+            Sync(oldRoot.left);
 
             if (oldRoot.right.node == null)
             {
-                Sync(oldRoot.left);
                 subtree.node = oldRoot.left.node;
+            } else if (oldRoot.left.node == null)
+            {
+                subtree.node = oldRoot.right.node;
             }
             else
             {
@@ -78,10 +81,11 @@ namespace Task05
                     Sync(newRoot.node.left);
                 }
 
-                subtree.node = newRoot.node;
                 Sync(newRoot.node.right);
+                subtree.node = newRoot.node;
                 newRoot.node = newRoot.node.right.node;
                 subtree.node.right.node = oldRoot.right.node;
+                subtree.node.left.node = oldRoot.left.node;
             }
 
             return oldRoot.value;

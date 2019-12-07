@@ -46,9 +46,13 @@ namespace Task05
             {
                 subtree.node = oldRoot.left.node;
             }
+            else if (oldRoot.left.node == null)
+            {
+                subtree.node = oldRoot.right.node;
+            }
             else
             {
-                var newRoot = subtree.node.right;
+                var newRoot = oldRoot.right;
 
                 while (newRoot.node.left.node != null)
                 {
@@ -58,6 +62,7 @@ namespace Task05
                 subtree.node = newRoot.node;
                 newRoot.node = newRoot.node.right.node;
                 subtree.node.right.node = oldRoot.right.node;
+                subtree.node.left.node = oldRoot.left.node;
             }
 
             return oldRoot.value;
