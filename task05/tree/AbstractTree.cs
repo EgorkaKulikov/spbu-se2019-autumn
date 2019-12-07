@@ -1,6 +1,15 @@
+using System;
+
 namespace Task05
 {
-    public abstract class AbstractTree<K, V, NP> where NP : AbstractTree<K, V, NP>.NodePlace
+    public interface ITree<K, V>
+    {
+        V Add(K key, V value);
+        V Find(K key);
+        V Delete(K key);
+    }
+
+    public abstract class AbstractTree<K, V, NP>: ITree<K, V> where NP : AbstractTree<K, V, NP>.NodePlace
     {
         public class NodePlace
         {

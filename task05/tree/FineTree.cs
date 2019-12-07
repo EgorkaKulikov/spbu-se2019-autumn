@@ -3,29 +3,29 @@ using System.Threading;
 
 namespace Task05
 {
-    public class FineTree<K, V> : AbstractTree<K, V, FineTree<K, V>.FineNodePlace> where K : IComparable<K>
+    public class FineTree<K, V> : AbstractTree<K, V, FineTree<K, V>.FinePlace> where K : IComparable<K>
     {
-        public class FineNodePlace : NodePlace
+        public class FinePlace : NodePlace
         {
             public Mutex nodeLock = new Mutex();
         }
 
-        protected override FineNodePlace Root { get; } = new FineNodePlace();
+        protected override FinePlace Root { get; } = new FinePlace();
 
-        protected override FineNodePlace CreatePlace() => new FineNodePlace();
+        protected override FinePlace CreatePlace() => new FinePlace();
 
-        protected override FineNodePlace FindPlace(K key)
+        protected override FinePlace FindPlace(K key)
         {
             Root.nodeLock.WaitOne();
 
             return FindRecursive(Root);
 
-            FineNodePlace FindRecursive(FineNodePlace current)
+            FinePlace FindRecursive(FinePlace current)
             {
                 if (current.node == null) return current;
 
                 var comparisonResult = key.CompareTo(current.node.key);
-                FineNodePlace next;
+                FinePlace next;
 
                 if (comparisonResult < 0)
                 {
@@ -46,17 +46,17 @@ namespace Task05
             }
         }
 
-        protected override void ReleasePlace(FineNodePlace place)
+        protected override void ReleasePlace(FinePlace place)
         {
             place.nodeLock.ReleaseMutex();
         }
 
-        private void Sync(FineNodePlace place) {
+        private void Sync(FinePlace place) {
             place.nodeLock.WaitOne();
             place.nodeLock.ReleaseMutex();
         }
 
-        protected override V DeleteRootOf(FineNodePlace subtree)
+        protected override V DeleteRootOf(FinePlace subtree)
         {
             var oldRoot = subtree.node;
 

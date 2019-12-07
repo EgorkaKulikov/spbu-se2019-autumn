@@ -3,24 +3,24 @@ using System.Threading;
 
 namespace Task05
 {
-    public class CoarseTree<K, V> : AbstractTree<K, V, CoarseTree<K, V>.Place> where K : IComparable<K>
+    public class CoarseTree<K, V> : AbstractTree<K, V, CoarseTree<K, V>.CoarsePlace> where K : IComparable<K>
     {
-        public class Place : NodePlace
+        public class CoarsePlace : NodePlace
         {
         }
 
         private readonly Mutex mutex = new Mutex();
 
-        protected override Place Root { get; } = new Place();
-        protected override Place CreatePlace() => new Place();
+        protected override CoarsePlace Root { get; } = new CoarsePlace();
+        protected override CoarsePlace CreatePlace() => new CoarsePlace();
 
-        protected override Place FindPlace(K key)
+        protected override CoarsePlace FindPlace(K key)
         {
             mutex.WaitOne();
 
             return FindRecursive(Root);
 
-            Place FindRecursive(Place current)
+            CoarsePlace FindRecursive(CoarsePlace current)
             {
                 if (current.node == null) return current;
 
@@ -33,18 +33,18 @@ namespace Task05
             }
         }
 
-        protected override void ReleasePlace(Place place)
+        protected override void ReleasePlace(CoarsePlace place)
         {
             mutex.ReleaseMutex();
         }
 
-        protected override V DeleteRootOf(Place subtree)
+        protected override V DeleteRootOf(CoarsePlace subtree)
         {
             var oldRoot = subtree.node;
 
-            if (subtree.node.right.node == null)
+            if (oldRoot.right.node == null)
             {
-                subtree.node = subtree.node.left.node;
+                subtree.node = oldRoot.left.node;
             }
             else
             {
@@ -56,7 +56,7 @@ namespace Task05
                 }
 
                 subtree.node = newRoot.node;
-                newRoot.node = subtree.node.right.node;
+                newRoot.node = newRoot.node.right.node;
                 subtree.node.right.node = oldRoot.right.node;
             }
 
