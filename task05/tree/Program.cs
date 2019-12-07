@@ -10,7 +10,7 @@ namespace Task05
 
         static void Main()
         {
-            var tree = new Tree<Int32, Int32>();
+            var tree = new CoarseTree<Int32, Int32>();
             var numberOfTasks = NextInt;
             var tasks = Enumerable.Range(0, numberOfTasks).Select(_ =>
             {
