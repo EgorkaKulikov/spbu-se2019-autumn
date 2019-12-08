@@ -73,13 +73,13 @@ namespace Task02
                 edges[k] = buffer[k];
         }
 
-        public static int Execute()
+        public static int Execute(Graph graph)
         {
             int ans = 0;
-            (int, int, int)[] edges = GeneralResources.graphListEdges;
+            (int, int, int)[] edges = graph.graphListEdges;
             parallelSort(edges, new (int, int, int)[edges.Length], 0, edges.Length, parallelDepth);
 
-            dsu = new int[GeneralResources.n];
+            dsu = new int[graph.graphAmountVertexes];
             Array.Fill(dsu, -1);
 
             for (int i = 0; i < edges.Length; i++)
