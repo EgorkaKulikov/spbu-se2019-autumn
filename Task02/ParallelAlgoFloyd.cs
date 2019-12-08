@@ -19,12 +19,12 @@ namespace Task02
             }
         }
 
-        public static int[,] Execute()
+        public static int[,] Execute(Graph graph)
         {
-            int n = GeneralResources.n;
+            int n = graph.graphAmountVertexes;
             dist = new int[n, n];
             Task[] tasks = new Task[n - 1];
-            Array.Copy(GeneralResources.graphMatrix, dist, n * n);
+            Array.Copy(graph.graphMatrix, dist, n * n);
 
             for (int k = 0; k < n; k++)
             {
