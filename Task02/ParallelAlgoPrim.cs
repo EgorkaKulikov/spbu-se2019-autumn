@@ -16,7 +16,7 @@ namespace Task02
         static HashSet<int> tree; // вершины, лежащие в остовном дереве
         static int[] minDistToTree;
 
-        static void FindNewV(int LIndex, int RIndex)
+        static void FindNewV(Graph graph, int LIndex, int RIndex)
         {
             // нахождение очередной вершины с минимальным расстоянием до дерева
             int localV = -1; // локальный ответ
@@ -26,9 +26,9 @@ namespace Task02
                 if (!tree.Contains(to))
                 {
                     // обновление минимального расстояния после добавления v в дерево
-                    if (minDistToTree[to] > GeneralResources.graphMatrix[v, to])
+                    if (minDistToTree[to] > graph.graphMatrix[v, to])
                     {
-                        minDistToTree[to] = GeneralResources.graphMatrix[v, to];
+                        minDistToTree[to] = graph.graphMatrix[v, to];
                     }
 
                     // обновление локального ответа
@@ -51,13 +51,13 @@ namespace Task02
             mutRunningThreads.ReleaseMutex();
         }
 
-        public static int Execute()
+        public static int Execute(Graph graph)
         {
             int ans = 0;
             tree = new HashSet<int>();
-            minDistToTree = new int[GeneralResources.n];
-            Array.Fill(minDistToTree, GeneralResources.INF);
-            chunkSize = GeneralResources.n / amountThreads;
+            minDistToTree = new int[graph.graphAmountVertexes];
+            Array.Fill(minDistToTree, Graph.INF);
+            chunkSize = graph.graphAmountVertexes / amountThreads;
 
             // начинаем с вершины 0
             minDistToTree[0] = 0;
@@ -75,10 +75,10 @@ namespace Task02
                 {
                     int LIndex = chunkSize * i;
                     int RIndex = chunkSize * (i + 1);
-                    ThreadPool.QueueUserWorkItem(_ => FindNewV(LIndex, RIndex));
+                    ThreadPool.QueueUserWorkItem(_ => FindNewV(graph, LIndex, RIndex));
                 }
                 // загрзим главный поток чтобы он просто так не ждал
-                FindNewV(chunkSize * (amountThreads - 1), GeneralResources.n);
+                FindNewV(graph, chunkSize * (amountThreads - 1), graph.graphAmountVertexes);
 
                 while (runningThreads > 0) {}
 
