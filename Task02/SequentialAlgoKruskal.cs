@@ -24,13 +24,13 @@ namespace Task02
             return true;
         }
 
-        public static int Execute()
+        public static int Execute(Graph graph)
         {
             int ans = 0;
-            (int, int, int)[] edges = GeneralResources.graphListEdges;
+            (int, int, int)[] edges = graph.graphListEdges;
             Array.Sort(edges);
 
-            dsu = new int[GeneralResources.n];
+            dsu = new int[graph.graphAmountVertexes];
             Array.Fill(dsu, -1);
 
             for (int i = 0; i < edges.Length; i++)
