@@ -81,10 +81,10 @@ namespace Task05
         [InlineData(1, 1)]
         [InlineData(2, 1)]
         [InlineData(3, 1)]
-        [InlineData(0, 10)]
-        [InlineData(1, 10)]
-        [InlineData(2, 10)]
-        [InlineData(3, 10)]
+        [InlineData(0, 8)]
+        [InlineData(1, 8)]
+        [InlineData(2, 8)]
+        [InlineData(3, 8)]
         public void DeletionTest(Int32 rangeIndex, Int32 numberOfTasks)
         {
             var tree = CreateTree();
