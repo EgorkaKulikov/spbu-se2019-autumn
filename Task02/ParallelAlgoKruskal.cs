@@ -5,6 +5,7 @@ namespace Task02
 {
     public class ParallelAlgoKruskal
     {
+        static Random rand = new Random();
         static int[] dsu;
         static int parallelDepth = 3; // глубина рекурсии, до которой происходит распараллеливание сортировки рёбер
 
@@ -19,7 +20,7 @@ namespace Task02
             y = getDsu(y);
             if (x == y)
                 return false;
-            if ((x + 2 * y) % 4 * 2 % 6 != 0) // псевдорандом
+            if (rand.Next(0, 1) == 1) // псевдорандом
                 dsu[y] = x;
             else
                 dsu[x] = y;
@@ -48,25 +49,15 @@ namespace Task02
             int i = LIndex, j = MIndex;
             for (int k = LIndex; k < RIndex; k++)
             {
-                if (i == MIndex)
+                if (i == MIndex || (j != RIndex && edges[i].CompareTo(edges[j]) >= 0))
                 {
                     buffer[k] = edges[j];
                     j++;
-                }
-                else if (j == RIndex)
-                {
-                    buffer[k] = edges[i];
-                    i++;
-                }
-                else if (edges[i].CompareTo(edges[j]) < 0)
-                {
-                    buffer[k] = edges[i];
-                    i++;
                 }
                 else
                 {
-                    buffer[k] = edges[j];
-                    j++;
+                    buffer[k] = edges[i];
+                    i++;
                 }
             }
             for (int k = LIndex; k < RIndex; k++)
