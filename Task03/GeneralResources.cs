@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 namespace Task03
 {
@@ -11,6 +12,7 @@ namespace Task03
         public static int amountConsumers = 1;
         public static int amountProducers = 3;
         public static int amountWorkingProducers = 0;
+        public static Mutex amountWorkingProducersMutex = new Mutex();
         public static Buffer<object> mainBuffer = new Buffer<object>();
     }
 }
