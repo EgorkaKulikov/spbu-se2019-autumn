@@ -24,31 +24,31 @@ namespace Task02
             int maxWeight = int.Parse(inputW[1]);
 
             Console.WriteLine("\nСоздание нового графа...");
-            GenerateMatrix.Execute(n, m, minWeight, maxWeight);
+            Graph graph = new Graph(n, m, minWeight, maxWeight);
             Console.WriteLine("Новый граф успешно создан.\n");
 
             Stopwatch timeSequentialFloyd = Stopwatch.StartNew();
-            int[,] ansSequentialFloyd = SequentialAlgoFloyd.Execute();
+            int[,] ansSequentialFloyd = SequentialAlgoFloyd.Execute(graph);
             timeSequentialFloyd.Stop();
             Console.WriteLine($"Время исполнения последовательного алгоритма Флойда = {timeSequentialFloyd.ElapsedMilliseconds} мс.");
 
             Stopwatch timeParallelFloyd = Stopwatch.StartNew();
-            int[,] ansParallelFloyd = ParallelAlgoFloyd.Execute();
+            int[,] ansParallelFloyd = ParallelAlgoFloyd.Execute(graph);
             timeParallelFloyd.Stop();
             Console.WriteLine($"Время исполнения параллельного алгоритма Флойда = {timeParallelFloyd.ElapsedMilliseconds} мс.");
 
             Stopwatch timeSequentialKruskal = Stopwatch.StartNew();
-            int ansSequentialKruskal = SequentialAlgoKruskal.Execute();
+            int ansSequentialKruskal = SequentialAlgoKruskal.Execute(graph);
             timeSequentialKruskal.Stop();
             Console.WriteLine($"Время исполнения последовательного алгоритма Краскала = {timeSequentialKruskal.ElapsedMilliseconds} мс.");
 
             Stopwatch timeParallelKruskal = Stopwatch.StartNew();
-            int ansParallelKruskal = ParallelAlgoKruskal.Execute();
+            int ansParallelKruskal = ParallelAlgoKruskal.Execute(graph);
             timeParallelKruskal.Stop();
             Console.WriteLine($"Время исполнения параллельного алгоритма Краскала = {timeParallelKruskal.ElapsedMilliseconds} мс.");
 
             Stopwatch timeParallelPrim = Stopwatch.StartNew();
-            int ansParallelPrim = ParallelAlgoPrim.Execute();
+            int ansParallelPrim = ParallelAlgoPrim.Execute(graph);
             timeParallelPrim.Stop();
             Console.WriteLine($"Время исполнения параллельного алгоритма Прима = {timeParallelPrim.ElapsedMilliseconds} мс.");
 
