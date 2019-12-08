@@ -11,22 +11,23 @@ namespace Task02
         public int graphAmountVertexes;
         static int NumberOfConventionalUnitsInTotal = 1000000;
 
-        public Graph(int n, int m, int minWeight, int maxWeight)
+        public Graph(int amountVertexes, int approximateAmountEdges, int minWeight, int maxWeight)
         {
-            graphAmountVertexes = n;
-            graphMatrix = new int[n, n];
+            graphAmountVertexes = amountVertexes;
+            graphMatrix = new int[amountVertexes, amountVertexes];
             Random random = new Random();
-            int partAmountEdgesFromMax = (int)((long)m * NumberOfConventionalUnitsInTotal / (n * (n - 1) / 2));
-            m = 0;
-            for (int i = 0; i < n; i++)
+            int partAmountEdgesFromMax = (int)((long)approximateAmountEdges * NumberOfConventionalUnitsInTotal /
+                (amountVertexes * (amountVertexes - 1) / 2));
+            int exectAmountEdges = 0;
+            for (int i = 0; i < amountVertexes; i++)
             {
-                for (int j = i + 1; j < n; j++)
+                for (int j = i + 1; j < amountVertexes; j++)
                 {
                     if (random.Next(NumberOfConventionalUnitsInTotal) < partAmountEdgesFromMax)
                     {
                         int weight = random.Next(minWeight, maxWeight);
                         graphMatrix[i, j] = graphMatrix[j, i] = weight;
-                        m++;
+                        exectAmountEdges++;
                     }
                     else
                     {
@@ -35,11 +36,11 @@ namespace Task02
                 }
             }
 
-            graphListEdges = new (int, int, int)[m];
+            graphListEdges = new (int, int, int)[exectAmountEdges];
             int k = 0;
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < amountVertexes; i++)
             {
-                for (int j = i + 1; j < n; j++)
+                for (int j = i + 1; j < amountVertexes; j++)
                 {
                     if (graphMatrix[i, j] != INF)
                     {
@@ -50,8 +51,8 @@ namespace Task02
             }
 
             StreamWriter foutMatrix = new StreamWriter("matrix.txt");
-            foutMatrix.Write($"{n} {m}\n");
-            for (k = 0; k < m; k++)
+            foutMatrix.Write($"{amountVertexes} {exectAmountEdges}\n");
+            for (k = 0; k < exectAmountEdges; k++)
             {
                 foutMatrix.Write($"{graphListEdges[k].Item2 + 1} " +
                     $"{graphListEdges[k].Item3 + 1} " +
