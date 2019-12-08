@@ -6,8 +6,8 @@ namespace Task02
 {
     public class ParallelAlgoPrim
     {
-        static int v; // вершина, не лежащая в дереве, расстояние до которой от дерева минимально
-        static int newV;
+        static int minDistVertex; // вершина, не лежащая в дереве, расстояние до которой от дерева минимально
+        static int newMinDistVertex;
         static int amountThreads = 6;
         static int runningThreads; // количество выполняющихся потоков
         static int chunkSize;
@@ -19,30 +19,30 @@ namespace Task02
         static void FindNewV(Graph graph, int LIndex, int RIndex)
         {
             // нахождение очередной вершины с минимальным расстоянием до дерева
-            int localV = -1; // локальный ответ
+            int localMinDistVertex = -1; // локальный ответ
 
             for (int to = LIndex; to < RIndex; to++)
             {
                 if (!tree.Contains(to))
                 {
                     // обновление минимального расстояния после добавления v в дерево
-                    if (minDistToTree[to] > graph.graphMatrix[v, to])
+                    if (minDistToTree[to] > graph.graphMatrix[minDistVertex, to])
                     {
-                        minDistToTree[to] = graph.graphMatrix[v, to];
+                        minDistToTree[to] = graph.graphMatrix[minDistVertex, to];
                     }
 
                     // обновление локального ответа
-                    if (localV == -1 || minDistToTree[localV] > minDistToTree[to])
-                        localV = to;
+                    if (localMinDistVertex == -1 || minDistToTree[localMinDistVertex] > minDistToTree[to])
+                        localMinDistVertex = to;
                 }
             }
 
-            if (localV != -1)
+            if (localMinDistVertex != -1)
             {
                 mutNewV.WaitOne();
                 // обновление глобального ответа
-                if (newV == -1 || minDistToTree[newV] > minDistToTree[localV])
-                    newV = localV;
+                if (newMinDistVertex == -1 || minDistToTree[newMinDistVertex] > minDistToTree[localMinDistVertex])
+                    newMinDistVertex = localMinDistVertex;
                 mutNewV.ReleaseMutex();
             }
 
@@ -61,14 +61,14 @@ namespace Task02
 
             // начинаем с вершины 0
             minDistToTree[0] = 0;
-            v = 0;
+            minDistVertex = 0;
 
-            while (v != -1)
+            while (minDistVertex != -1)
             {
-                ans += minDistToTree[v];
-                tree.Add(v);
+                ans += minDistToTree[minDistVertex];
+                tree.Add(minDistVertex);
 
-                newV = -1;
+                newMinDistVertex = -1;
 
                 runningThreads = amountThreads;
                 for (int i = 0; i < amountThreads - 1; i++)
@@ -82,7 +82,7 @@ namespace Task02
 
                 while (runningThreads > 0) {}
 
-                v = newV;
+                minDistVertex = newMinDistVertex;
             }
 
             return ans;
