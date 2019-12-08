@@ -20,7 +20,9 @@ namespace Task03
         {
             Thread thread = new Thread(() =>
             {
+                GeneralResources.amountWorkingProducersMutex.WaitOne();
                 GeneralResources.amountWorkingProducers++;
+                GeneralResources.amountWorkingProducersMutex.ReleaseMutex();
                 Console.WriteLine($"{name} begin do some work.");
                 while (canContinue)
                 {
@@ -28,7 +30,9 @@ namespace Task03
                     PutData();
                     Console.WriteLine($"{name} put data in buffer.");
                 }
+                GeneralResources.amountWorkingProducersMutex.WaitOne();
                 GeneralResources.amountWorkingProducers--;
+                GeneralResources.amountWorkingProducersMutex.ReleaseMutex();
                 Console.WriteLine($"{name} end do some work.");
             });
             thread.Start();
