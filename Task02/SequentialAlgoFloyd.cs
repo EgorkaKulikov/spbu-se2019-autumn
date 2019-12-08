@@ -4,11 +4,11 @@ namespace Task02
 {
     public class SequentialAlgoFloyd
     {
-        public static int[,] Execute()
+        public static int[,] Execute(Graph graph)
         {
-            int n = GeneralResources.n;
+            int n = graph.graphAmountVertexes;
             int[,] dist = new int[n, n];
-            Array.Copy(GeneralResources.graphMatrix, dist, n * n);
+            Array.Copy(graph.graphMatrix, dist, n * n);
 
             for (int k = 0; k < n; k++)
             {
