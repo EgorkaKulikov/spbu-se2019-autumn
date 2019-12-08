@@ -5,7 +5,7 @@ namespace Task02
 {
     public class ParallelAlgoFloyd
     {
-        static int[,] dist;
+        private static int[,] dist;
 
         static void parallelProc(int n, int k, int i)
         {
@@ -36,6 +36,10 @@ namespace Task02
                         int newI = i;
                         // передаём newK и newI для того, чтобы избежать замыкания
                         tasks[i < k ? i : i - 1] = Task.Run(() => parallelProc(n, newK, newI));
+                        // так как i из 0..(n-1), но одно из значений i не используется (блокируется
+                        // условием i != k), то для единообразия обработки Task tasks.Length == n - 1,
+                        // и выражение (i < k ? i : i - 1) задаёт биекцию из [0; k-1] U [k+1; n-1] в
+                        // [0; n-2]
                     }
                 }
                 // ждём выполнения всех задач для того, чтобы случайно не получилось так, что
