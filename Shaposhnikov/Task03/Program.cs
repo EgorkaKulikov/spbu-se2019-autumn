@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Task03
+namespace Consumers
 {
     public static class Program
     {
@@ -18,11 +18,11 @@ namespace Task03
 
             Console.ReadKey();
 
-            foreach (var consumer in consumers)
-                consumer.Cancel();
-
             foreach (var producer in producers)
                 producer.Cancel();
+            
+            foreach (var consumer in consumers)
+                consumer.Cancel();
         }
     }
 }
