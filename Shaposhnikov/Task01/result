@@ -1,0 +1,35 @@
+For [size] = 10 x 10 approximate time:
+	Gsl implementation: 0.000003 
+	Sequential implementation: 0.000002 
+	Parallel implementation: 0.000003 
+
+For [size] = 100 x 100 approximate time:
+	Gsl implementation: 0.000244 
+	Sequential implementation: 0.001073 
+	Parallel implementation: 0.001153 
+
+For [size] = 200 x 200 approximate time:
+	Gsl implementation: 0.001782 
+	Sequential implementation: 0.008239 
+	Parallel implementation: 0.008773 
+
+For [size] = 500 x 500 approximate time:
+	Gsl implementation: 0.027433 
+	Sequential implementation: 0.128184 
+	Parallel implementation: 0.132959 
+
+For [size] = 1000 x 1000 approximate time:
+	Gsl implementation: 0.242128 
+	Sequential implementation: 1.025240 
+	Parallel implementation: 1.056797 
+
+For [size] = 2000 x 2000 approximate time:
+	Gsl implementation: 2.341544 
+	Sequential implementation: 8.480387 
+	Parallel implementation: 8.876591 
+
+For [size] = 3000 x 3000 approximate time:
+	Gsl implementation: 7.450241 
+	Sequential implementation: 27.718796 
+	Parallel implementation: 28.959493 
+
