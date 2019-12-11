@@ -93,15 +93,14 @@ namespace Task03
 
             Console.ReadKey();
 
-            
-            for (int i = 0; i < consCnt; ++i)
-            {
-                consumers[i].Cancel();
-            }
-            
             for (int i = 0; i < prodCnt; ++i)
             {
                 producers[i].Cancel();
+            }
+
+            for (int i = 0; i < consCnt; ++i)
+            {
+                consumers[i].Cancel();
             }
         }
     }
