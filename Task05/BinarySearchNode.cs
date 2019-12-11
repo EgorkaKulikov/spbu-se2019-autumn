@@ -15,14 +15,5 @@ namespace Task05
         }
 
         protected override BinarySearchNode<K, V> createNode(K key, V value) => new BinarySearchNode<K, V>(key, value);
-
-        public override BinarySearchNode<K, V> copy() => new BinarySearchNode<K, V>(key, value);
-
-        public override bool Equals(object other) =>
-            (other is BinarySearchNode<K, V> &&
-                    (other as BinarySearchNode<K, V>).left == left &&
-                    (other as BinarySearchNode<K, V>).right == right &&
-                    (other as BinarySearchNode<K, V>).key.CompareTo(key) == 0 &&
-                    (other as BinarySearchNode<K, V>).value.Equals(value));
     }
 }
