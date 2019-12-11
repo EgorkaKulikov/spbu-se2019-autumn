@@ -33,6 +33,7 @@ namespace ConsoleApplication1
         {
             Program.Sem.WaitOne();
             _mc.WaitOne();
+            Thread.Sleep(1);
             if (Program.Buf.Count != 0)
             {
                 object data = Program.Buf[0];
@@ -57,14 +58,12 @@ namespace ConsoleApplication1
                 int prod = Convert.ToInt32 (args[0]);
                 int cons = Convert.ToInt32 (args[1]);
                 Thread[] threads = new Thread[prod + cons];
-                int completed = 0;
                 for (int i = 0; i < prod; i++)
                 {
                     Producer p = new Producer();
                     threads[i] = new Thread(data =>
                     {
                         p.Set(data);
-                        Interlocked.Increment(ref completed);
                     });
                     threads[i].Start(i);
                 }
@@ -74,10 +73,6 @@ namespace ConsoleApplication1
                     threads[i] = new Thread(number =>
                     {
                         c.Get(number);
-                        if (Interlocked.Increment(ref completed) >= cons && prod < cons)
-                        {
-                            Sem.Release();
-                        }
                     });
                     threads[i].Start(i - prod + 1);
                 }
@@ -92,7 +87,7 @@ namespace ConsoleApplication1
                         finish = 1;
                         for (int i = 0; i < prod + cons; i++)
                         {
-                            threads[i].Abort();
+                            threads[i].Join();
                         }
                     }
                 }
