@@ -12,12 +12,6 @@ namespace Task05
             insert(elements);
         }
 
-        public FinelySynchronizedBinarySearchTree(BinarySearchNode<K, V> root)
-        {
-            overRoot = new BinarySearchNode<K, V>(new K(), new V());
-            overRoot.parent = root;
-        }
-
         protected override BinarySearchNode<K, V> createRoot(K key, V value) => new BinarySearchNode<K, V>(key, value);
         
         protected override NodeStatus setWithInfo(K key, V? value)
