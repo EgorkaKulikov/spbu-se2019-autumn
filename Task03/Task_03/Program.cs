@@ -8,7 +8,6 @@ namespace Task_03
     {
         public static readonly List<T> DataList = new List<T>();
         public static readonly Semaphore empty = new Semaphore(0, Int32.MaxValue);
-        public static readonly Semaphore full = new Semaphore(Int32.MaxValue, Int32.MaxValue);
         public static readonly Mutex ConsumerMutex = new Mutex();
         public static readonly Mutex ProducerMutex = new Mutex();
     }
@@ -23,14 +22,13 @@ namespace Task_03
             Console.WriteLine("Producer {0} starts working", Thread.CurrentThread.ManagedThreadId);
             while (_working)
             {
-                Data<T>.full.WaitOne();
                 Data<T>.ProducerMutex.WaitOne();
 
                 Data<T>.DataList.Add(new T());
                 Console.WriteLine("Producer {0} adds new data", Thread.CurrentThread.ManagedThreadId);
 
-                Data<T>.ProducerMutex.ReleaseMutex();
                 Data<T>.empty.Release();
+                Data<T>.ProducerMutex.ReleaseMutex();
                 Thread.Sleep(1000);
             }
             Console.WriteLine("Producer {0} stops working", Thread.CurrentThread.ManagedThreadId);
@@ -58,7 +56,6 @@ namespace Task_03
                 Data<T>.DataList.RemoveAt(0);
                 Console.WriteLine("Consumer {0} reads {1}", Thread.CurrentThread.ManagedThreadId, data);
 
-                Data<T>.full.Release();
                 Data<T>.ConsumerMutex.ReleaseMutex();
                 Thread.Sleep(1000);
             }
