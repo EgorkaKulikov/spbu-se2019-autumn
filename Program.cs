@@ -15,6 +15,15 @@ namespace Task04
 
             await LoadAndProcessAsync(URL);
 
+            /*
+             * Output:
+             * https://wikimediafoundation.org/ -- 52415
+             * https://foundation.wikimedia.org/wiki/Cookie_statement -- 31632
+             * https://stats.wikimedia.org/v2/#/en.wikipedia.org -- 1658
+             * https://www.mediawiki.org/wiki/Special:MyLanguage/How_to_contribute -- 66077
+             * https://www.mediawiki.org/ -- 47327
+             */
+
             Console.ReadKey();
         }
 
