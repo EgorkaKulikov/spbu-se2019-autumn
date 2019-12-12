@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Threading;
 
@@ -163,6 +164,30 @@ namespace Task_05
                 root = parent;
             }
         }
+
+         public bool CheckMutexes()
+         {
+             if (root != null)
+             {
+                 if (!root.mutex.WaitOne(0)) return false;
+                 root.mutex.ReleaseMutex();
+                 BinaryTreeNode parent = root;
+                 root = root.left;
+                 if (!CheckMutexes())
+                 {
+                     root = parent;
+                     return false;
+                 }
+                 else
+                 {
+                     root = parent.right;
+                     bool result = CheckMutexes();
+                     root = parent;
+                     return result;
+                 }
+             }
+             else return true;
+         }
     }
 
     internal class Program
@@ -246,10 +271,11 @@ namespace Task_05
                         });
                         th.Start(i);
                     }
-
                     allDone.WaitOne();
+                    if (!tree.CheckMutexes()) Console.WriteLine("Some mutexes aren't released!");
                 }
             }
+            else Console.WriteLine("You didn't provide a filename");
         }
     }
 }
