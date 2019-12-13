@@ -1,6 +1,7 @@
 #define MAX_DEPTH  16
 #define MIN_LENGHT 32
 
+__device__
 void selection_sort(int *array, int left, int right) {
 
   for (int i = left; i <= right; ++i) {
