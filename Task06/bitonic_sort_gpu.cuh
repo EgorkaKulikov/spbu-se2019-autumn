@@ -1,0 +1,1 @@
+void bitonic_sort_gpu(int *arr, unsigned int log_len);
