@@ -5,6 +5,15 @@
 #include <stdlib.h>
 
 #define NUM_THREADS 256
+#define gpu_errcheck(ans) { gpu_assert((ans), __FILE__, __LINE__); }
+inline void gpu_assert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess) 
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
 
 __global__ void bitonic_sort_step(int *arr, int comp_dist, int seq_size) {
 	int item = threadIdx.x + blockIdx.x * blockDim.x;
@@ -26,8 +35,8 @@ void bitonic_sort_gpu(int *arr, unsigned int log_len) {
 	size_t arr_size = arr_len * sizeof(int);
 	int* gpu_arr;
 
-	cudaMalloc(&gpu_arr, arr_size);
-	cudaMemcpy(gpu_arr, arr, arr_size, cudaMemcpyHostToDevice);
+	gpu_errcheck(cudaMalloc(&gpu_arr, arr_size));
+	gpu_errcheck(cudaMemcpy(gpu_arr, arr, arr_size, cudaMemcpyHostToDevice));
 
 	dim3 num_blocks = arr_len / NUM_THREADS;
 	dim3 num_threads = NUM_THREADS;
@@ -44,6 +53,6 @@ void bitonic_sort_gpu(int *arr, unsigned int log_len) {
 		}
 	}
 
-	cudaMemcpy(arr, gpu_arr, arr_size, cudaMemcpyDeviceToHost);
+	gpu_errcheck(cudaMemcpy(arr, gpu_arr, arr_size, cudaMemcpyDeviceToHost));
 	cudaFree(&gpu_arr);
 }
