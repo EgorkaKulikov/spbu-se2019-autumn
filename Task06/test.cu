@@ -28,7 +28,6 @@ void fill_arr(int *arr, int arr_len) {
 
 int main()
 {
-	FILE *output = fopen("test_fucked_input.txt", "w+");
 	int arr_len = 1 << MAX_ARRAY_LOG_LEN;
 	size_t arr_size = arr_len * sizeof(int);
 	int *arr = (int *)malloc(arr_size);
@@ -56,10 +55,6 @@ int main()
 		printf("FAIL FOR LENGTH %d\n", arr_len);
 	}
 	else {
-		for (int i = 0; i < arr_len; i++) {
-			fprintf(output,"%d", temp_arr[i]);
-			fprintf(output, "\n");
-		}
 		printf("GPU version SUCCESS\n");
 	}
 
