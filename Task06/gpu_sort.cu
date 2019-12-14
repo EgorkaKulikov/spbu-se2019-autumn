@@ -1,27 +1,41 @@
 #define MAX_DEPTH  16
 #define MIN_LENGHT 32
 
+#include <stdio.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+
+#define GPUERRCHK(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess)
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
+
 __device__
 void selection_sort(int *array, int left, int right) {
 
   for (int i = left; i <= right; ++i) {
 
-    int minValue = array[i];
-    int minId    = i;
+    int min_value = array[i];
+    int min_id    = i;
 
     for (int j = i + 1; j <= right; ++j) {
 
-      if (array[j] < minValue) {
+      if (array[j] < min_value) {
       
-        minValue = array[j];
-        minId    = j;
+        min_value = array[j];
+        min_id    = j;
       }
     }
 
-    if (i != minId) {
+    if (i != min_id) {
 
-      array[minId] = array[i];
-      array[i]     = minValue;
+      array[min_id] = array[i];
+      array[i]     = min_value;
     }
   }
 }
@@ -37,56 +51,56 @@ void quicksort(int *array, int left, int right, int depth){
 
   cudaStream_t s, s1;
 
-  int* leftPtr  = array + left;
-  int* rightPtr = array + right;
+  int* left_ptr  = array + left;
+  int* right_ptr = array + right;
 
   int pivot = array[(left + right) / 2];
 
-  int leftValue, rightValue;
+  int left_value, right_value;
 
-  int newRight, newLeft;
+  int new_right, new_left;
 
-  while (leftPtr <= rightPtr) {
+  while (left_ptr <= right_ptr) {
   
-    leftValue  = *leftPtr;
-    rightValue = *rightPtr;
+    left_value  = *left_ptr;
+    right_value = *right_ptr;
 
-    while (leftValue < pivot && leftPtr < array + right) {
+    while (left_value < pivot && left_ptr < array + right) {
     
-      leftPtr++;
-      leftValue = *leftPtr;
+      left_ptr++;
+      left_value = *left_ptr;
     }
 
-    while (rightValue > pivot && rightPtr > array+left) {
+    while (right_value > pivot && right_ptr > array + left) {
     
-      rightPtr--;
-      rightValue = *rightPtr;
+      right_ptr--;
+      right_value = *right_ptr;
     }
 
-    if (leftPtr <= rightPtr) {
+    if (left_ptr <= right_ptr) {
     
-      *leftPtr  = rightValue;
-      *rightPtr = leftValue;
+      *left_ptr  = right_value;
+      *right_ptr = left_value;
       
-      leftPtr++;
-      rightPtr--;
+      left_ptr++;
+      right_ptr--;
     }
   }
 
-  newRight = rightPtr - array;
-  newLeft  = leftPtr - array;
+  new_right = right_ptr - array;
+  new_left  = left_ptr - array;
 
-  if (left < rightPtr - array) {
+  if (left < right_ptr - array) {
     
     cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
-    quicksort<<<1, 1, 0, s>>>(array, left, newRight, depth + 1);
+    quicksort<<<1, 1, 0, s>>>(array, left, new_right, depth + 1);
     cudaStreamDestroy(s);
   }
 
-  if (leftPtr - array < right) {
+  if (left_ptr - array < right) {
     
     cudaStreamCreateWithFlags(&s1, cudaStreamNonBlocking);
-    quicksort<<<1, 1, 0, s1>>>(array, newLeft, right, depth + 1);
+    quicksort<<<1, 1, 0, s1>>>(array, new_left, right, depth + 1);
     cudaStreamDestroy(s1);
   }
 }
@@ -94,20 +108,20 @@ void quicksort(int *array, int left, int right, int depth){
 extern "C"
 void gpu_sort(int *array, int size){
 
-  int* gpuArray;
+  int* gpu_array;
   int left = 0;
   int right = size - 1;
 
-  cudaDeviceSetLimit(cudaLimitDevRuntimeSyncDepth, MAX_DEPTH);
+  GPUERRCHK(cudaDeviceSetLimit(cudaLimitDevRuntimeSyncDepth, MAX_DEPTH));
   
-  cudaMalloc((void**) &gpuArray, size * sizeof(int));
-  cudaMemcpy(gpuArray, array, size * sizeof(int), cudaMemcpyHostToDevice);
+  GPUERRCHK(cudaMalloc((void**) &gpu_array, size * sizeof(int)));
+  GPUERRCHK(cudaMemcpy(gpu_array, array, size * sizeof(int), cudaMemcpyHostToDevice));
   
-  quicksort<<<1, 1>>>(gpuArray, left, right, 0);
-  cudaDeviceSynchronize();
+  quicksort<<<1, 1>>>(gpu_array, left, right, 0);
+  GPUERRCHK(cudaDeviceSynchronize());
   
-  cudaMemcpy(array, gpuArray, size*sizeof(int), cudaMemcpyDeviceToHost);
-  cudaFree(gpuArray);
+  GPUERRCHK(cudaMemcpy(array, gpu_array, size*sizeof(int), cudaMemcpyDeviceToHost));
+  GPUERRCHK(cudaFree(gpu_array));
   
-  cudaDeviceReset();
+  GPUERRCHK(cudaDeviceReset());
 }
