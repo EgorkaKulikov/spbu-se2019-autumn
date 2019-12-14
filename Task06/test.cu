@@ -17,9 +17,9 @@ bool is_sorted(int *arr, int len) {
 	return result;
 }
 
-void fill_arr(int *arr, int arrLen) {
+void fill_arr(int *arr, int arr_len) {
 	srand(time(NULL));
-	for (int i = 0; i < arrLen; i++) {
+	for (int i = 0; i < arr_len; i++) {
 		arr[i] = rand();
 	}
 }
