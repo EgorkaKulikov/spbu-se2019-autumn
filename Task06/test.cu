@@ -12,7 +12,9 @@
 bool is_sorted(int *arr, int len) {
 	bool result = true;
 	for (int i = 0; i < len - 1; i++) {
-		result = arr[i] <= arr[i + 1];
+		if (arr[i] > arr[i + 1]) {
+			return false;
+		}
 	}
 	return result;
 }
@@ -26,13 +28,14 @@ void fill_arr(int *arr, int arr_len) {
 
 int main()
 {
+	FILE *output = fopen("test_fucked_input.txt", "w+");
 	int arr_len = 1 << MAX_ARRAY_LOG_LEN;
 	size_t arr_size = arr_len * sizeof(int);
 	int *arr = (int *)malloc(arr_size);
 	int *temp_arr = (int *)malloc(arr_size);
 
 	fill_arr(arr, arr_len);
-
+	
 	//Initializing CUDA context
 	cudaFree(0);
 
@@ -53,6 +56,10 @@ int main()
 		printf("FAIL FOR LENGTH %d\n", arr_len);
 	}
 	else {
+		for (int i = 0; i < arr_len; i++) {
+			fprintf(output,"%d", temp_arr[i]);
+			fprintf(output, "\n");
+		}
 		printf("GPU version SUCCESS\n");
 	}
 
