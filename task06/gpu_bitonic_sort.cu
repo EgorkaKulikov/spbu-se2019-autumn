@@ -6,13 +6,13 @@
 
 #include "utils.hxx"
 
-#define CUDA_assert(expr) do {                                                    \
-	cudaError_t code = expr;                                                      \
-	if (code != cudaSuccess) {                                                    \
-		std::cerr << "Line: " << __LINE__ << " | " << #expr << std::endl;         \
+#define CUDA_assert(expr) do { \
+	cudaError_t code = expr; \
+	if (code != cudaSuccess) { \
+		std::cerr << "Line: " << __LINE__ << " | " << #expr << std::endl; \
 		std::cerr << "    CUDA error: " << cudaGetErrorString(code) << std::endl; \
-		return false;                                                             \
-	}                                                                             \
+		return false; \
+	} \
 } while (0)
 
 #define MAX_THREADS 512
@@ -34,6 +34,19 @@ static __global__ void remain_of_remain_swap(int* data, int block_size, int pass
 	bitonic_swap(data, offset + threadIdx.x, number_of_blocks, block_size, pass);
 }
 
+struct cuda_config {
+	dim3 tnum;
+	dim3 bnum;
+};
+
+#define run_on_device(func, config, ...) do { \
+	if (config.tnum.x == 0 || config.tnum.y == 0 || config.bnum.x == 0 || config.bnum.y == 0) { \
+		break; \
+	} \
+	func<<<config.bnum, config.tnum>>>(__VA_ARGS__); \
+	CUDA_assert(cudaGetLastError()); \
+} while (0)
+
 bool gpu_bitonic_sort(std::vector<int>& data) {
 	int* device_data;
 
@@ -50,39 +63,33 @@ bool gpu_bitonic_sort(std::vector<int>& data) {
 		for (int pass = 0; pass < stage; pass++) {
 			int step = block_size >> 1;
 
-			dim3 number_of_cuda_threads(min(MAX_THREADS, step));
-			number_of_cuda_threads.y = MAX_THREADS / number_of_cuda_threads.x;
-			
-			dim3 number_of_cuda_blocks(number_of_blocks / number_of_cuda_threads.y, max(1, step / MAX_THREADS));
+			struct cuda_config config;
+			config.tnum.x = min(MAX_THREADS, step);
+			config.tnum.y = MAX_THREADS / config.tnum.x;
+			config.bnum.x = number_of_blocks / config.tnum.y;
+			config.bnum.y = max(1, step / MAX_THREADS);
 
-			if (number_of_cuda_blocks.x > 0) {
-				general_swap<<<number_of_cuda_blocks, number_of_cuda_threads>>>(device_data, block_size, pass, number_of_cuda_threads.y);
-				CUDA_assert(cudaGetLastError());
-			}
+			run_on_device(general_swap, config, device_data, block_size, pass, config.tnum.y);
 
-			int block_offset = number_of_cuda_blocks.x * number_of_cuda_threads.y;
-			number_of_cuda_blocks.x = number_of_blocks % number_of_cuda_threads.y;
-			number_of_cuda_threads.y = 1;
+			int block_offset = config.bnum.x * config.tnum.y;
+			config.bnum.x = number_of_blocks % config.tnum.y;
+			config.tnum.y = 1;
 
-			if (number_of_cuda_blocks.x > 0) {
-				remain_of_general_swap<<<number_of_cuda_blocks, number_of_cuda_threads>>>(device_data, block_size, pass, block_offset);
-				CUDA_assert(cudaGetLastError());
-			}
+			run_on_device(remain_of_general_swap, config, device_data, block_size, pass, block_offset);
 
 			if (remain_size != 0) {
 				int threads = remain_size - step;
 				if (threads > 0) {
-					int count = threads / MAX_THREADS;
-					if (count > 0) {
-						remain_swap<<<count, MAX_THREADS>>>(device_data, block_size, pass, number_of_blocks);
-						CUDA_assert(cudaGetLastError());
-					}
+					config.bnum = threads / MAX_THREADS;
+					config.tnum = MAX_THREADS;
 
-					int remain = threads % MAX_THREADS;
-					if (remain > 0) {
-						remain_of_remain_swap<<<1, remain>>>(device_data, block_size, pass, number_of_blocks, count * MAX_THREADS);
-						CUDA_assert(cudaGetLastError());
-					}
+					run_on_device(remain_swap, config, device_data, block_size, pass, number_of_blocks);
+
+					int offset = config.bnum.x * MAX_THREADS;
+					config.bnum = 1;
+					config.tnum = threads % MAX_THREADS;
+
+					run_on_device(remain_of_remain_swap, config, device_data, block_size, pass, number_of_blocks, offset);
 				}
 			}
 

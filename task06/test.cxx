@@ -40,7 +40,7 @@ struct sort_info {
 	#name                      \
 )
 
-static int multiplier = 2;
+static double multiplier = 2;
 
 int main() {
 	srand(time(NULL));
