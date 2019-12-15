@@ -67,5 +67,40 @@ namespace Task05
 
             return oldRoot.value;
         }
+
+        protected Boolean IsValid(CoarsePlace place)
+        {
+            if (place.node == null)
+            {
+                return true;
+            }
+
+            if (place.node.left.node != null
+                &&
+                place.node.left.node.key.CompareTo(place.node.key) >= 0)
+            {
+                return false;
+            }
+
+            if (place.node.right.node != null
+                &&
+                place.node.right.node.key.CompareTo(place.node.key) <= 0)
+            {
+                return false;
+            }
+
+            return IsValid(place.node.left) && IsValid(place.node.right);
+        }
+
+        public override Boolean IsValid()
+        {
+            if (!mutex.WaitOne(0))
+            {
+                return false;
+            }
+            mutex.ReleaseMutex();
+
+            return IsValid(Root);
+        }
     }
 }

@@ -36,6 +36,8 @@ namespace Task05
                     Assert.Equal(index + 1, tree.Find(index));
                 }
             }
+
+            Assert.True(tree.IsValid());
         }
 
         [Theory]
@@ -58,6 +60,8 @@ namespace Task05
                     Assert.Equal(0, tree.Find(index));
                 }
             }
+
+            Assert.True(tree.IsValid());
         }
     }
 }

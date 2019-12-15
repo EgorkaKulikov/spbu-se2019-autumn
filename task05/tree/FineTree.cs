@@ -7,7 +7,7 @@ namespace Task05
     {
         public class FinePlace : NodePlace
         {
-            public Mutex nodeLock = new Mutex();
+            public SemaphoreSlim nodeLock = new SemaphoreSlim(1, 1);
         }
 
         protected override FinePlace Root { get; } = new FinePlace();
@@ -16,7 +16,7 @@ namespace Task05
 
         protected override FinePlace FindPlace(K key)
         {
-            Root.nodeLock.WaitOne();
+            Root.nodeLock.Wait();
 
             return FindRecursive(Root);
 
@@ -40,20 +40,20 @@ namespace Task05
                     return current;
                 }
 
-                next.nodeLock.WaitOne();
-                current.nodeLock.ReleaseMutex();
+                next.nodeLock.Wait();
+                current.nodeLock.Release();
                 return FindRecursive(next);
             }
         }
 
         protected override void ReleasePlace(FinePlace place)
         {
-            place.nodeLock.ReleaseMutex();
+            place.nodeLock.Release();
         }
 
         private void Sync(FinePlace place) {
-            place.nodeLock.WaitOne();
-            place.nodeLock.ReleaseMutex();
+            place.nodeLock.Wait();
+            place.nodeLock.Release();
         }
 
         protected override V DeleteRootOf(FinePlace subtree)
@@ -89,6 +89,42 @@ namespace Task05
             }
 
             return oldRoot.value;
+        }
+
+        protected Boolean IsValid(FinePlace place)
+        {
+            if (!place.nodeLock.Wait(0))
+            {
+                return false;
+            }
+            place.nodeLock.Release();
+
+
+            if (place.node == null)
+            {
+                return true;
+            }
+
+            if (place.node.left.node != null
+                &&
+                place.node.left.node.key.CompareTo(place.node.key) >= 0)
+            {
+                return false;
+            }
+
+            if (place.node.right.node != null
+                &&
+                place.node.right.node.key.CompareTo(place.node.key) <= 0)
+            {
+                return false;
+            }
+
+            return IsValid(place.node.left) && IsValid(place.node.right);
+        }
+
+        public override Boolean IsValid()
+        {
+            return IsValid(Root);
         }
     }
 }

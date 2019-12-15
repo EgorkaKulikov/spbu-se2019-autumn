@@ -7,6 +7,7 @@ namespace Task05
         V Add(K key, V value);
         V Find(K key);
         V Delete(K key);
+        Boolean IsValid();        
     }
 
     public abstract class AbstractTree<K, V, NP>: ITree<K, V> where NP : AbstractTree<K, V, NP>.NodePlace
@@ -37,6 +38,7 @@ namespace Task05
         protected abstract NP FindPlace(K key);
         protected abstract V DeleteRootOf(NP place);
         protected abstract void ReleasePlace(NP place);
+        public abstract Boolean IsValid();
 
         public V Find(K key)
         {
