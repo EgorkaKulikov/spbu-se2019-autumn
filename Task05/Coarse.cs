@@ -9,9 +9,9 @@ namespace Task05
     {
         public class BinaryTreeNode
         {
-            public int key;
-            public BinaryTreeNode left;
-            public BinaryTreeNode right;
+            internal int key;
+            internal BinaryTreeNode left;
+            internal BinaryTreeNode right;
 
             public BinaryTreeNode()
             {
@@ -20,7 +20,7 @@ namespace Task05
             }
         }
         
-        public BinaryTreeNode root;
+        private BinaryTreeNode root;
         private Mutex mInsert = new Mutex();
         private Mutex mRemove = new Mutex();
         private Mutex mFind = new Mutex();
@@ -96,7 +96,7 @@ namespace Task05
             mRemove.ReleaseMutex();
         }
 
-        public BinaryTreeNode Min(BinaryTreeNode node)
+        private BinaryTreeNode Min(BinaryTreeNode node)
         {
             if (node.left == null) return node;
             else return Min(node.left);

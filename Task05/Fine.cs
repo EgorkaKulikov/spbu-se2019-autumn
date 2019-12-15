@@ -5,14 +5,15 @@ using System.Threading;
 
 namespace Task_05
 {
+
     class BinaryTree
     {
         public class BinaryTreeNode
         {
-            public int key;
-            public BinaryTreeNode left;
-            public BinaryTreeNode right;
-            public Mutex mutex;
+            internal int key;
+            internal BinaryTreeNode left;
+            internal BinaryTreeNode right;
+            internal Mutex mutex;
 
             public BinaryTreeNode()
             {
@@ -21,8 +22,8 @@ namespace Task_05
                 mutex = new Mutex(true);
             }
         }
-
-        public BinaryTreeNode root;
+        
+        internal BinaryTreeNode root;
         private int firstСame = 0;
         private Mutex firstCameMutex = new Mutex();
 
@@ -115,7 +116,7 @@ namespace Task_05
             }
         }
 
-        public BinaryTreeNode Min(BinaryTreeNode node)
+        private BinaryTreeNode Min(BinaryTreeNode node)
         {
             node.mutex.WaitOne();
             if (node.left == null)
@@ -165,29 +166,29 @@ namespace Task_05
             }
         }
 
-         public bool CheckMutexes()
-         {
-             if (root != null)
-             {
-                 if (!root.mutex.WaitOne(0)) return false;
-                 root.mutex.ReleaseMutex();
-                 BinaryTreeNode parent = root;
-                 root = root.left;
-                 if (!CheckMutexes())
-                 {
-                     root = parent;
-                     return false;
-                 }
-                 else
-                 {
-                     root = parent.right;
-                     bool result = CheckMutexes();
-                     root = parent;
-                     return result;
-                 }
-             }
-             else return true;
-         }
+        public bool CheckMutexes()
+        {
+            if (root != null)
+            {
+                if (!root.mutex.WaitOne(0)) return false;
+                root.mutex.ReleaseMutex();
+                BinaryTreeNode parent = root;
+                root = root.left;
+                if (!CheckMutexes())
+                {
+                    root = parent;
+                    return false;
+                }
+                else
+                {
+                    root = parent.right;
+                    bool result = CheckMutexes();
+                    root = parent;
+                    return result;
+                }
+            }
+            else return true;
+        }
     }
 
     internal class Program
