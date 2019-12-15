@@ -1,11 +1,10 @@
+
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <iostream>
 #include <vector>
 
 #include "utils.hxx"
-
-#define NUM_THREADS 256
 
 #define CUDA_assert(expr) do {                                                    \
 	cudaError_t code = expr;                                                      \
@@ -21,6 +20,10 @@
 
 static __global__ void general_swap(int* data, int block_size, int pass, int div) {
 	bitonic_swap(data, blockIdx.y * MAX_THREADS + threadIdx.x, blockIdx.x * div + threadIdx.y, block_size, pass);
+}
+
+static __global__ void remain_of_general_swap(int* data, int block_size, int pass, int offset) {
+	bitonic_swap(data, blockIdx.y * MAX_THREADS + threadIdx.x, offset + threadIdx.y, block_size, pass);
 }
 
 static __global__ void remain_swap(int* data, int block_size, int pass, int number_of_blocks) {
@@ -47,28 +50,39 @@ bool gpu_bitonic_sort(std::vector<int>& data) {
 		for (int pass = 0; pass < stage; pass++) {
 			int step = block_size >> 1;
 
-			dim3 number_of_cuda_blocks(number_of_blocks, max(1, step / MAX_THREADS));
-			dim3 number_of_cuda_threads(min(MAX_THREADS, step), 1);
-			int div = 1;
+			dim3 number_of_cuda_threads(min(MAX_THREADS, step));
+			number_of_cuda_threads.y = MAX_THREADS / number_of_cuda_threads.x;
+			
+			dim3 number_of_cuda_blocks(number_of_blocks / number_of_cuda_threads.y, max(1, step / MAX_THREADS));
 
-			if (number_of_cuda_blocks.x * number_of_cuda_blocks.y > MAX_BLOCKS) {
-				div = MAX_THREADS / number_of_cuda_threads.x;
-				number_of_cuda_blocks.x /= div;
-				number_of_cuda_threads.y = div;
+			if (number_of_cuda_blocks.x > 0) {
+				general_swap<<<number_of_cuda_blocks, number_of_cuda_threads>>>(device_data, block_size, pass, number_of_cuda_threads.y);
+				CUDA_assert(cudaGetLastError());
 			}
 
-			general_swap<<<number_of_cuda_blocks, number_of_cuda_threads>>>(device_data, block_size, pass, div);
-			std::cout << number_of_cuda_blocks.x << ' ' << number_of_cuda_blocks.y << ' ' << number_of_cuda_threads.x << ' ' << number_of_cuda_threads.y << std::endl;
-			CUDA_assert(cudaGetLastError());
+			int block_offset = number_of_cuda_blocks.x * number_of_cuda_threads.y;
+			number_of_cuda_blocks.x = number_of_blocks % number_of_cuda_threads.y;
+			number_of_cuda_threads.y = 1;
+
+			if (number_of_cuda_blocks.x > 0) {
+				remain_of_general_swap<<<number_of_cuda_blocks, number_of_cuda_threads>>>(device_data, block_size, pass, block_offset);
+				CUDA_assert(cudaGetLastError());
+			}
 
 			if (remain_size != 0) {
 				int threads = remain_size - step;
 				if (threads > 0) {
 					int count = threads / MAX_THREADS;
-					remain_swap<<<count, MAX_THREADS>>>(device_data, block_size, pass, number_of_blocks);
-					CUDA_assert(cudaGetLastError());
-					remain_of_remain_swap<<<1, threads % MAX_THREADS>>>(device_data, block_size, pass, number_of_blocks, count * MAX_THREADS);
-					CUDA_assert(cudaGetLastError());
+					if (count > 0) {
+						remain_swap<<<count, MAX_THREADS>>>(device_data, block_size, pass, number_of_blocks);
+						CUDA_assert(cudaGetLastError());
+					}
+
+					int remain = threads % MAX_THREADS;
+					if (remain > 0) {
+						remain_of_remain_swap<<<1, remain>>>(device_data, block_size, pass, number_of_blocks, count * MAX_THREADS);
+						CUDA_assert(cudaGetLastError());
+					}
 				}
 			}
 

@@ -9,7 +9,7 @@
 
 #include "sort.hxx"
 
-int is_sorted(const std::vector<int>& data) {
+int count_errors(const std::vector<int>& data) {
 	int cnt = 0;
 
 	for (int i = 1; i < data.size(); i++) {
@@ -51,28 +51,24 @@ int main() {
 	sorts.push_back(SORT(gpu_bitonic));
 
 	std::vector<int> data;
-	bool no_error = true;
 
 	data.resize(1 << 10);
 	fill_random(data, 0);
 
-	while (no_error) {
-		std::cerr << data.size() << std::endl;
-
+	while (true) {
 		for (auto& sort_info : sorts) {
 			std::vector<int> temp_data(data);
 			
 			int begin_time = std::clock();
-			no_error = sort_info.sort(temp_data);
+			bool is_ok = sort_info.sort(temp_data);
 			int end_time = std::clock();
 
-			if (!no_error) {
+			if (!is_ok) {
 				std::cerr << sort_info.name << ": Error during sorting" << std::endl;
 				return 1;
 			}
 
-			int count = is_sorted(temp_data);
-
+			int count = count_errors(temp_data);
 			if (count != 0) {
 				std::cerr << sort_info.name << ": Invalid sorting " << std::to_string(count) << std::endl;
 				//return 1;
@@ -82,7 +78,6 @@ int main() {
 		}
 
 		std::cout << data.size() << std::endl;
-
 		for (auto& sort_info : sorts) {
 			std::cout << sort_info.name << '~' << sort_info.time << std::endl;
 		}

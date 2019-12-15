@@ -34,22 +34,7 @@ static void sequential_sort(int* array, int begin, int end)
     sequential_sort(array, pivot + 1, end);
 }
 
-//static void parallel_sort(int* array, int begin, int end, int depth, int max_depth)
-//{
-//    if (depth > max_depth) {
-//        sequential_sort(array, begin, end);
-//        return;
-//    }
-//
-//    int pivot = partition(array, begin, end);
-//    auto thread1 = std::thread(parallel_sort, array, begin, pivot - 1, depth + 1, max_depth);
-//    auto thread2 = std::thread(parallel_sort, array, pivot + 1, end, depth + 1, max_depth);
-//    thread1.join();
-//    thread2.join();
-//}
-
 bool quick_sort(std::vector<int>& data) {
-    //parallel_sort(array, 0, size - 1, 0, get_max_depth());
     sequential_sort(data.data(), 0, data.size() - 1);
 	return true;
 }
