@@ -6,51 +6,50 @@ namespace Task05
 {
     class Program
     {
-        static Int32 NextInt => Int32.Parse(Console.ReadLine());
-
-        static void Main()
+        static void Main(String[] args)
         {
-            var tree = new CoarseTree<Int32, Int32>();
-            var numberOfTasks = NextInt;
-            var tasks = Enumerable.Range(0, numberOfTasks).Select(_ =>
+            var type = args[0];
+            var action = args[1];
+            var numberOfWorkers = 8;
+            var amountOfWork = 1000;
+            ITree<Int32, Int32> tree;
+
+            switch (type)
             {
-                var numberOfActions = NextInt;
-                var actions = Enumerable.Range(0, numberOfActions).Select(_ =>
-                {
-                    var action = NextInt;
-                    var index = NextInt;
-                    var delay = NextInt;
-
-                    return (action, index, delay);
-                });
-
-                return new Task(() =>
-                {
-                    foreach ((var action, var index, var delay) in actions)
+                case "coarse":
                     {
-                        Task.Delay(delay / 10);
-                        switch (action)
-                        {
-                            case 0:
-                                tree.Add(index, index + 1);
-                                break;
-                            case 1:
-                                tree.Delete(index);
-                                break;
-                            case 2:
-                                tree.Find(index);
-                                break;
-                        }
+                        tree = new CoarseTree<Int32, Int32>();
+                        break;
                     }
-                });
-            }).ToArray();
-
-            foreach (var task in tasks)
-            {
-                task.Start();
+                default:
+                    {
+                        tree = new FineTree<Int32, Int32>();
+                        break;
+                    }
             }
 
-            Task.WaitAll(tasks);
+            var distribution = Utils.GetSimpleDistribution(numberOfWorkers, amountOfWork);
+            Task[] tasks;
+
+            switch (action)
+            {
+                case "add":
+                    {
+                        tasks = Utils.GetInsertionTasks(tree, distribution);
+                        break;
+                    }
+                case "delete":
+                    {
+                        Int32 height = 2 + (Int32)Math.Log2(numberOfWorkers * amountOfWork);
+                        Utils.FillBalanced(tree, height);
+                        tasks = Utils.GetDeletionTasks(tree, distribution);
+                        break;
+                    }
+                default:
+                    return;
+            }
+
+            Utils.RunAll(tasks);
         }
     }
 }
