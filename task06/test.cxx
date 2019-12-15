@@ -40,7 +40,7 @@ struct sort_info {
 	#name                      \
 )
 
-static double multiplier = 2;
+static double multiplier = 1.1;
 
 int main() {
 	srand(time(NULL));
@@ -71,7 +71,7 @@ int main() {
 			int count = count_errors(temp_data);
 			if (count != 0) {
 				std::cerr << sort_info.name << ": Invalid sorting " << std::to_string(count) << std::endl;
-				//return 1;
+				return 1;
 			}
 
 			sort_info.time = end_time - begin_time;

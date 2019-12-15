@@ -23,7 +23,7 @@ static __global__ void general_swap(int* data, int block_size, int pass, int div
 }
 
 static __global__ void remain_of_general_swap(int* data, int block_size, int pass, int offset) {
-	bitonic_swap(data, blockIdx.y * MAX_THREADS + threadIdx.x, offset + threadIdx.y, block_size, pass);
+	bitonic_swap(data, blockIdx.y * MAX_THREADS + threadIdx.x, offset + blockIdx.x, block_size, pass);
 }
 
 static __global__ void remain_swap(int* data, int block_size, int pass, int number_of_blocks) {
@@ -77,20 +77,18 @@ bool gpu_bitonic_sort(std::vector<int>& data) {
 
 			run_on_device(remain_of_general_swap, config, device_data, block_size, pass, block_offset);
 
-			if (remain_size != 0) {
-				int threads = remain_size - step;
-				if (threads > 0) {
-					config.bnum = threads / MAX_THREADS;
-					config.tnum = MAX_THREADS;
+			int remain_threads = remain_size - step;
+			if (remain_threads > 0) {
+				config.bnum = remain_threads / MAX_THREADS;
+				config.tnum = MAX_THREADS;
 
-					run_on_device(remain_swap, config, device_data, block_size, pass, number_of_blocks);
+				run_on_device(remain_swap, config, device_data, block_size, pass, number_of_blocks);
 
-					int offset = config.bnum.x * MAX_THREADS;
-					config.bnum = 1;
-					config.tnum = threads % MAX_THREADS;
+				int offset = config.bnum.x * MAX_THREADS;
+				config.bnum = 1;
+				config.tnum = remain_threads % MAX_THREADS;
 
-					run_on_device(remain_of_remain_swap, config, device_data, block_size, pass, number_of_blocks, offset);
-				}
+				run_on_device(remain_of_remain_swap, config, device_data, block_size, pass, number_of_blocks, offset);
 			}
 
 			CUDA_assert(cudaDeviceSynchronize());
