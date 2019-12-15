@@ -1,11 +1,9 @@
 
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
 
 #include <ctime>
-#include <cstdio>
 
 #include "sort.hxx"
 
@@ -40,9 +38,13 @@ struct sort_info {
 	#name                      \
 )
 
-static double multiplier = 1.1;
+int main(int argc, char** argv) {
+	int begin_size = std::stoi(argv[1]);
+	double multiplier = std::stod(argv[2]);
 
-int main() {
+	std::cerr << "Begin size: " << begin_size << std::endl;
+	std::cerr << "Multiplier: " << multiplier << std::endl;
+
 	srand(time(NULL));
 
 	std::vector<struct sort_info> sorts;
@@ -53,10 +55,12 @@ int main() {
 
 	std::vector<int> data;
 
-	data.resize(260000);
+	data.resize(begin_size);
 	fill_random(data, 0);
 
 	while (true) {
+		std::cerr << "Start " << data.size() << std::endl;
+
 		for (auto& sort_info : sorts) {
 			std::vector<int> temp_data(data);
 			
