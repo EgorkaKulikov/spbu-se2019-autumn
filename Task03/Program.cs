@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -42,10 +42,11 @@ namespace Task03
     class Consumer<T> where T : new()
     {
         private bool _isCancelled = false;
+        private bool _isStopped = false;
 
         public void Cancel()
         { 
-            _isCancelled = true;
+            _isStopped = true;
             Console.WriteLine($"Consumer {Thread.CurrentThread.ManagedThreadId} is cancelled");
         }
         public Consumer()
@@ -58,12 +59,14 @@ namespace Task03
         {
             while (!_isCancelled)
             {
-                Data<T>.full.WaitOne();
-                if (_isCancelled)
+                Data<T>.consMtx.WaitOne();
+                if (_isStopped && Data<T>.buffer.Count == 0)
                 {
+                    _isCancelled = true;
+                    Data<T>.consMtx.ReleaseMutex();
                     break;
                 }
-                Data<T>.consMtx.WaitOne();
+                Data<T>.full.WaitOne();
                 Data<T>.buffer.RemoveAt(0);
                 Data<T>.consMtx.ReleaseMutex();
                 Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} is consuming, #buffer = {Data<T>.buffer.Count}");
