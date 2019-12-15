@@ -118,7 +118,8 @@ int main()
 
 #pragma region gpu_time
 	auto begin = std::chrono::steady_clock::now();
-	bitonic_sort_gpu(arr, cnt);	auto end = std::chrono::steady_clock::now();
+	bitonic_sort_gpu(arr, cnt);
+	auto end = std::chrono::steady_clock::now();
 
 	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
 	std::cout << "The time: " << elapsed_ms.count() << " ms\n";
