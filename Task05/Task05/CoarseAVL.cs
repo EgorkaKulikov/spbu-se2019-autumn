@@ -5,125 +5,101 @@ namespace Task05
 {
     public class CoarseAVL
     {
-        private Mutex TreeMutex = new Mutex();
+        private static readonly Mutex TreeMutex = new Mutex();
         private class Node
         {
-            public int value;
-            public Node left;
-            public Node right;
+            public int Value;
+            public Node Left;
+            public Node Right;
             public Node(int value)
             {
-                this.value = value;
+                this.Value = value;
             }
         }
-        Node root;
+
+        private Node _root;
 
         public void Add(int value)
         {
             TreeMutex.WaitOne();
-            Node newItem = new Node(value);
-            if (root == null)
-                root = newItem;
-            else
-                root = InnerInsert(root, newItem);
-            Console.WriteLine("Inserted {0}", value);
+            var newItem = new Node(value);
+            _root = (_root == null) ? newItem : InnerInsert(_root, newItem);
             TreeMutex.ReleaseMutex();
         }
-        private Node InnerInsert(Node current, Node n)
+        private static Node InnerInsert(Node current, Node n)
         {
             if (current == null)
             {
                 current = n;
                 return current;
             }
-            else if (n.value < current.value)
+            if (n.Value < current.Value)
             {
-                current.left = InnerInsert(current.left, n);
+                current.Left = InnerInsert(current.Left, n);
                 current = BalanceTree(current);
             }
-            else if (n.value > current.value)
+            else if (n.Value > current.Value)
             {
-                current.right = InnerInsert(current.right, n);
+                current.Right = InnerInsert(current.Right, n);
                 current = BalanceTree(current);
             }
             return current;
         }
-        private Node BalanceTree(Node current)
+        private static Node BalanceTree(Node current)
         {
-            int b_factor = BalanceFactor(current);
-            if (b_factor > 1)
+            var bFactor = BalanceFactor(current);
+            if (bFactor > 1)
             {
-                if (BalanceFactor(current.left) > 0)
-                    current = RotateLL(current);
-                else
-                    current = RotateLR(current);
+                current = BalanceFactor(current.Left) > 0 ? RotateLL(current) : RotateLR(current);
             }
-            else if (b_factor < -1)
+            else if (bFactor < -1)
             {
-                if (BalanceFactor(current.right) > 0)
-                    current = RotateRL(current);
-                else
-                    current = RotateRR(current);
+                current = BalanceFactor(current.Right) > 0 ? RotateRL(current) : RotateRR(current);
             }
             return current;
         }
         public void Delete(int target)
         {
             TreeMutex.WaitOne();
-            root = InerDelete(root, target);
+            _root = InnerDelete(_root, target);
             TreeMutex.ReleaseMutex();
         }
-        private Node InerDelete(Node current, int target)
+        private static Node InnerDelete(Node current, int target)
         {
-            Node parent;
             if (current == null)
                 return null;
-            else
+            if (target < current.Value)
             {
-                if (target < current.value)
-                {
-                    current.left = InerDelete(current.left, target);
+                    current.Left = InnerDelete(current.Left, target);
                     if (BalanceFactor(current) == -2)
                     {
-                        if (BalanceFactor(current.right) <= 0)
-                            current = RotateRR(current);
-                        else
-                            current = RotateRL(current);
+                        current = BalanceFactor(current.Right) <= 0 ? RotateRR(current) : RotateRL(current);
                     }
-                }
-                else if (target > current.value)
-                {
-                    current.right = InerDelete(current.right, target);
-                    if (BalanceFactor(current) == 2)
+            }
+            else if (target > current.Value)
+            {
+                    current.Right = InnerDelete(current.Right, target);
+                    if (BalanceFactor(current) != 2) return current;
+                    current = BalanceFactor(current.Left) >= 0 ? RotateLL(current) : RotateLR(current);
+            }
+            else
+            {
+                    if (current.Right != null)
                     {
-                        if (BalanceFactor(current.left) >= 0)
-                            current = RotateLL(current);
-                        else
-                            current = RotateLR(current);
-                    }
-                }
-                else
-                {
-                    if (current.right != null)
-                    {
-                        parent = current.right;
-                        while (parent.left != null)
+                        var parent = current.Right;
+                        while (parent.Left != null)
                         {
-                            parent = parent.left;
+                            parent = parent.Left;
                         }
-                        current.value = parent.value;
-                        current.right = InerDelete(current.right, parent.value);
+                        current.Value = parent.Value;
+                        current.Right = InnerDelete(current.Right, parent.Value);
                         if (BalanceFactor(current) == 2)
                         {
-                            if (BalanceFactor(current.left) >= 0)
-                                current = RotateLL(current);
-                            else
-                                current = RotateLR(current);
+                            current = BalanceFactor(current.Left) >= 0 ? RotateLL(current) : RotateLR(current);
                         }
                     }
                     else
-                        return current.left;
-                }
+                        return current.Left;
             }
             return current;
         }
@@ -132,21 +108,21 @@ namespace Task05
             TreeMutex.WaitOne();
             try
             {
-                return InerFind(key, root);
+                return InnerFind(key, _root);
             }
             finally
             {
                 TreeMutex.ReleaseMutex();
             }
         }
-        private bool InerFind(int target, Node current)
+        private static bool InnerFind(int target, Node current)
         {
             if (current != null)
             {
-                if (current.value > target)
-                    return InerFind(target, current.left);
-                if (current.value < target)
-                    return InerFind(target, current.right);
+                if (current.Value > target)
+                    return InnerFind(target, current.Left);
+                if (current.Value < target)
+                    return InnerFind(target, current.Right);
                 return true;
             }
             else
@@ -154,69 +130,73 @@ namespace Task05
         }
         public string DisplayTree()
         {
-            if (root == null)
+            if (_root == null)
                 return "Tree is empty";
             string ans = "";
-            ans = InerDisplayTree(root, ans);
+            ans = InnerDisplayTree(_root, ans);
             return ans;
         }
-        private string InerDisplayTree(Node current, string ans)
+        private static string InnerDisplayTree(Node current, string ans)
         {
             if (current != null)
             {
-                ans = InerDisplayTree(current.left, ans);
-                ans += current.value.ToString();
+                ans = InnerDisplayTree(current.Left, ans);
+                ans += current.Value.ToString();
                 ans += " ";
-                ans = InerDisplayTree(current.right, ans);
+                ans = InnerDisplayTree(current.Right, ans);
             }
             return ans;
         }
-        private int Max(int l, int r)
+        private static int Max(int l, int r)
         {
             return l > r ? l : r;
         }
-        private int GetHeight(Node current)
+        private static int GetHeight(Node current)
         {
             int height = 0;
             if (current != null)
             {
-                int l = GetHeight(current.left);
-                int r = GetHeight(current.right);
+                int l = GetHeight(current.Left);
+                int r = GetHeight(current.Right);
                 height = Max(l, r) + 1;
             }
             return height;
         }
-        private int BalanceFactor(Node current)
+        private static int BalanceFactor(Node current)
         {
-            int l = GetHeight(current.left);
-            int r = GetHeight(current.right);
+            int l = GetHeight(current.Left);
+            int r = GetHeight(current.Right);
             return l - r;
         }
-        private Node RotateRR(Node parent)
+        private static Node RotateRR(Node parent)
         {
-            Node pivot = parent.right;
-            parent.right = pivot.left;
-            pivot.left = parent;
+            Node pivot = parent.Right;
+            parent.Right = pivot.Left;
+            pivot.Left = parent;
             return pivot;
         }
-        private Node RotateLL(Node parent)
+        private static Node RotateLL(Node parent)
         {
-            Node pivot = parent.left;
-            parent.left = pivot.right;
-            pivot.right = parent;
+            Node pivot = parent.Left;
+            parent.Left = pivot.Right;
+            pivot.Right = parent;
             return pivot;
         }
-        private Node RotateLR(Node parent)
+        private static Node RotateLR(Node parent)
         {
-            Node pivot = parent.left;
-            parent.left = RotateRR(pivot);
+            Node pivot = parent.Left;
+            parent.Left = RotateRR(pivot);
             return RotateLL(parent);
         }
-        private Node RotateRL(Node parent)
+        private static Node RotateRL(Node parent)
         {
-            Node pivot = parent.right;
-            parent.right = RotateLL(pivot);
+            Node pivot = parent.Right;
+            parent.Right = RotateLL(pivot);
             return RotateRR(parent);
+        }
+        ~CoarseAVL()
+        {
+            TreeMutex.Dispose();
         }
     }
 }
