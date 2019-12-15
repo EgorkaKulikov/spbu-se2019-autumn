@@ -47,12 +47,13 @@ int main() {
 
 	std::vector<struct sort_info> sorts;
 	sorts.push_back(SORT(quick));
+	sorts.push_back(SORT(parallel_quick));
 	sorts.push_back(SORT(bitonic));
 	sorts.push_back(SORT(gpu_bitonic));
 
 	std::vector<int> data;
 
-	data.resize(1 << 10);
+	data.resize(260000);
 	fill_random(data, 0);
 
 	while (true) {
