@@ -9,45 +9,55 @@ namespace Task05
         static void Main(String[] args)
         {
             var type = args[0];
-            var action = args[1];
             var numberOfWorkers = 8;
-            var amountOfWork = 1000;
+            var amountOfWork = 1000000;
             ITree<Int32, Int32> tree;
 
-            switch (type)
+            if (type == "coarse")
             {
-                case "coarse":
-                    {
-                        tree = new CoarseTree<Int32, Int32>();
-                        break;
-                    }
-                default:
-                    {
-                        tree = new FineTree<Int32, Int32>();
-                        break;
-                    }
+                tree = new CoarseTree<Int32, Int32>();
+            }
+            else
+            {
+                tree = new FineTree<Int32, Int32>();
             }
 
-            var distribution = Utils.GetSimpleDistribution(numberOfWorkers, amountOfWork);
-            Task[] tasks;
+            var height = 25;
+            var size = (1 << height) - 1;
+            var maxIndex = size << 1;
+            var random = new Random();
 
-            switch (action)
+            Utils.FillBalanced(tree, height);
+
+            Task[] tasks = new Task[numberOfWorkers];
+
+            for (var i = 0; i < tasks.Length; i++)
             {
-                case "add":
+                tasks[i] = new Task(() =>
+                {
+                    for (var i = 0; i < amountOfWork; i++)
                     {
-                        tasks = Utils.GetInsertionTasks(tree, distribution);
-                        break;
+                        var action = random.Next(0, 1);
+
+                        if (0 == action)
+                        {
+                            var index = random.Next(size + 1, maxIndex);
+
+                            tree.Add(index, index + 1);
+                        }
+                        else
+                        {
+                            var num = random.Next(1, size) & 0;
+                            var index = 1 + size * num / (size + 1);
+
+                            tree.Delete(index);
+                        }
                     }
-                case "delete":
-                    {
-                        Int32 height = 2 + (Int32)Math.Log2(numberOfWorkers * amountOfWork);
-                        Utils.FillBalanced(tree, height);
-                        tasks = Utils.GetDeletionTasks(tree, distribution);
-                        break;
-                    }
-                default:
-                    return;
+                });
             }
+
+            Console.WriteLine("Ready");
+            Console.ReadKey();
 
             Utils.RunAll(tasks);
         }
