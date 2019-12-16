@@ -1,73 +1,48 @@
 using System;
+using System.Threading;
 
 namespace Task05
 {
-    public interface ITree<K, V>
+    public abstract class AbstractTree<K, V> : ITree<K, V>
     {
-        V Add(K key, V value);
-        V Find(K key);
-        Boolean IsValid();
-    }
-
-    public abstract class AbstractTree<K, V, NP>: ITree<K, V> where NP : AbstractTree<K, V, NP>.NodePlace
-    {
-        public class NodePlace
-        {
-            public Node node = null;
-        }
-
         public class Node
         {
             public K key;
             public V value;
-            public readonly NP left;
-            public readonly NP right;
+            public Node left = null;
+            public Node right = null;
 
-            public Node(K key, V value, NP left, NP right)
+            public Node(K key, V value)
             {
                 this.key = key;
                 this.value = value;
-                this.left = left;
-                this.right = right;
             }
         }
 
-        protected abstract NP Root { get; }
-        protected abstract NP CreatePlace();
-        protected abstract NP FindPlace(K key);
-        protected abstract void ReleasePlace(NP place);
-        public abstract Boolean IsValid();
-
-        public V Find(K key)
+        protected void Lock(Object obj)
         {
-            var place = FindPlace(key);
-
-            V result = default;
-            if (place.node != null)
+            if (obj == null)
             {
-                result = place.node.value;
+                return;
             }
 
-            ReleasePlace(place);
-            return result;
+            Boolean entered = false;
+
+            while (!entered)
+            {
+                Monitor.Enter(obj, ref entered);
+            }
         }
 
-        public V Add(K key, V value)
+        protected void Unlock(Object obj)
         {
-            var place = FindPlace(key);
-
-            V result = default;
-            if (place.node == null)
-            {
-                place.node = new Node(key, value, CreatePlace(), CreatePlace());
-            }
-            else
-            {
-                result = place.node.value;
-            }
-
-            ReleasePlace(place);
-            return result;
+            Monitor.Exit(obj);
         }
+
+        protected Object rootLock = new Object();
+        protected Node root;
+
+        public abstract V Find(K key);
+        public abstract V Add(K key, V value);
     }
 }

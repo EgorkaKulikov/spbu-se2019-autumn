@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Task05
 {
-    public abstract class ITreeTest
+    public abstract class AbstractTreeTest
     {
         protected abstract ITree<Int32, Int32> CreateTree();
 
@@ -18,6 +18,17 @@ namespace Task05
             var value = tree.Find(1);
 
             Assert.Equal(0, value);
+        }
+
+        [Fact]
+        public void SimpleFindTest()
+        {
+            var tree = CreateTree();
+
+            tree.Add(1, 2);
+            var value = tree.Find(1);
+
+            Assert.Equal(2, value);
         }
 
         [Theory]
@@ -37,7 +48,7 @@ namespace Task05
                 }
             }
 
-            Assert.True(tree.IsValid());
+            //Assert.True(tree.IsValid());
         }
     }
 }

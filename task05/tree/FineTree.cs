@@ -3,93 +3,94 @@ using System.Threading;
 
 namespace Task05
 {
-    public class FineTree<K, V> : AbstractTree<K, V, FineTree<K, V>.FinePlace> where K : IComparable<K>
+    public class FineTree<K, V> : AbstractTree<K, V> where K : IComparable<K>
     {
-        public class FinePlace : NodePlace
+        public override V Find(K key)
         {
-            public SemaphoreSlim nodeLock = new SemaphoreSlim(1, 1);
-        }
+            Lock(rootLock);
 
-        protected override FinePlace Root { get; } = new FinePlace();
+            V result = default;
+            var current = root;
+            Lock(current);
 
-        protected override FinePlace CreatePlace() => new FinePlace();
+            Unlock(rootLock);
 
-        protected override FinePlace FindPlace(K key)
-        {
-            Root.nodeLock.Wait();
-
-            return FindRecursive(Root);
-
-            FinePlace FindRecursive(FinePlace current)
+            while (current != null)
             {
-                if (current.node == null) return current;
+                Node next = null;
 
-                var comparisonResult = key.CompareTo(current.node.key);
-                FinePlace next;
+                var comparisonResult = key.CompareTo(current.key);
 
                 if (comparisonResult < 0)
                 {
-                    next = current.node.left;
+                    next = current.left;
                 }
                 else if (comparisonResult > 0)
                 {
-                    next = current.node.right;
+                    next = current.right;
                 }
                 else
                 {
-                    return current;
+                    result = current.value;
                 }
 
-                next.nodeLock.Wait();
-                current.nodeLock.Release();
-                return FindRecursive(next);
+                Lock(next);
+                Unlock(current);
+                current = next;
             }
+
+            return result;
         }
 
-        protected override void ReleasePlace(FinePlace place)
+        public override V Add(K key, V value)
         {
-            place.nodeLock.Release();
-        }
+            Lock(rootLock);
 
-        private void Sync(FinePlace place) {
-            place.nodeLock.Wait();
-            place.nodeLock.Release();
-        }
+            V result = default;
+            var current = root;
+            Lock(current);
 
-        protected Boolean IsValid(FinePlace place)
-        {
-            if (!place.nodeLock.Wait(0))
+            if (root == null)
             {
-                return false;
-            }
-            place.nodeLock.Release();
-
-
-            if (place.node == null)
-            {
-                return true;
+                root = new Node(key, value);
             }
 
-            if (place.node.left.node != null
-                &&
-                place.node.left.node.key.CompareTo(place.node.key) >= 0)
+            Unlock(rootLock);
+
+            while (current != null)
             {
-                return false;
+                var next = current;
+
+                var comparisonResult = key.CompareTo(current.key);
+
+                if (comparisonResult < 0)
+                {
+                    next = current.left;
+                    if (next == null)
+                    {
+                        current.left = new Node(key, value);
+                    }
+                }
+                else if (comparisonResult > 0)
+                {
+                    next = current.right;
+                    if (next == null)
+                    {
+                        current.right = new Node(key, value);
+                    }
+                }
+                else
+                {
+                    result = current.value;
+                    current.value = value;
+                }
+
+                Lock(next);
+                Unlock(current);
+                current = next;
             }
 
-            if (place.node.right.node != null
-                &&
-                place.node.right.node.key.CompareTo(place.node.key) <= 0)
-            {
-                return false;
-            }
-
-            return IsValid(place.node.left) && IsValid(place.node.right);
-        }
-
-        public override Boolean IsValid()
-        {
-            return IsValid(Root);
+            return result;
         }
     }
 }

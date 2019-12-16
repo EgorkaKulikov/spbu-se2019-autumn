@@ -1,76 +1,87 @@
 using System;
-using System.Threading;
 
 namespace Task05
 {
-    public class CoarseTree<K, V> : AbstractTree<K, V, CoarseTree<K, V>.CoarsePlace> where K : IComparable<K>
+    public class CoarseTree<K, V> : AbstractTree<K, V> where K : IComparable<K>
     {
-        public class CoarsePlace : NodePlace
+        public override V Find(K key)
         {
+            Lock(rootLock);
+
+            V result = default;
+            var current = root;
+
+            while (current != null)
+            {
+                Node next = null;
+
+                var comparisonResult = key.CompareTo(current.key);
+
+                if (comparisonResult < 0)
+                {
+                    next = current.left;
+                }
+                else if (comparisonResult > 0)
+                {
+                    next = current.right;
+                }
+                else
+                {
+                    result = current.value;
+                }
+
+                current = next;
+            }
+
+            Unlock(rootLock);
+            return result;
         }
 
-        private readonly Mutex mutex = new Mutex();
-
-        protected override CoarsePlace Root { get; } = new CoarsePlace();
-        protected override CoarsePlace CreatePlace() => new CoarsePlace();
-
-        protected override CoarsePlace FindPlace(K key)
+        public override V Add(K key, V value)
         {
-            mutex.WaitOne();
+            Lock(rootLock);
 
-            return FindRecursive(Root);
+            V result = default;
+            var current = root;
 
-            CoarsePlace FindRecursive(CoarsePlace current)
+            if (root == null)
             {
-                if (current.node == null) return current;
-
-                var comparisonResult = key.CompareTo(current.node.key);
-
-                if (comparisonResult < 0) return FindRecursive(current.node.left);
-                if (comparisonResult > 0) return FindRecursive(current.node.right);
-
-                return current;
-            }
-        }
-
-        protected override void ReleasePlace(CoarsePlace place)
-        {
-            mutex.ReleaseMutex();
-        }
-
-        protected Boolean IsValid(CoarsePlace place)
-        {
-            if (place.node == null)
-            {
-                return true;
+                root = new Node(key, value);
             }
 
-            if (place.node.left.node != null
-                &&
-                place.node.left.node.key.CompareTo(place.node.key) >= 0)
+            while (current != null)
             {
-                return false;
+                Node next = null;
+
+                var comparisonResult = key.CompareTo(current.key);
+
+                if (comparisonResult < 0)
+                {
+                    next = current.left;
+                    if (next == null)
+                    {
+                        current.left = new Node(key, value);
+                    }
+                }
+                else if (comparisonResult > 0)
+                {
+                    next = current.right;
+                    if (next == null)
+                    {
+                        current.right = new Node(key, value);
+                    }
+                }
+                else
+                {
+                    result = current.value;
+                    current.value = value;
+                }
+
+                current = next;
             }
 
-            if (place.node.right.node != null
-                &&
-                place.node.right.node.key.CompareTo(place.node.key) <= 0)
-            {
-                return false;
-            }
-
-            return IsValid(place.node.left) && IsValid(place.node.right);
-        }
-
-        public override Boolean IsValid()
-        {
-            if (!mutex.WaitOne(0))
-            {
-                return false;
-            }
-            mutex.ReleaseMutex();
-
-            return IsValid(Root);
+            Unlock(rootLock);
+            return result;
         }
     }
 }

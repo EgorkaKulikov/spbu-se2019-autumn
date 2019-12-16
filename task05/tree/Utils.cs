@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Task05
@@ -20,25 +21,22 @@ namespace Task05
             }
         }
 
-        public static Int32[][] GetSimpleDistribution(Int32 numberOfWorkers, Int32 amountOfWork)
-        {
-            var result = new Int32[numberOfWorkers][];
+        public static void Shake(Int32[] array) {
+            var random = new Random();
 
-            for (Int32 i = 0; i < numberOfWorkers; i++)
-            {
-                result[i] = new Int32[amountOfWork];
-
-                for (Int32 j = 0; j < amountOfWork; j++)
-                {
-                    result[i][j] = 1 + j + amountOfWork * i;
-                }
+            for (var i = 0; i < array.Length; i++) {
+                var iswap = random.Next(0, array.Length - 1);
+                var tmp = array[i];
+                array[i] = array[iswap];
+                array[iswap] = tmp;
             }
-
-            return result;
         }
 
-        public static Int32[][] GetSimpleReverseDistribution(Int32 numberOfWorkers, Int32 amountOfWork)
+        public static Int32[][] GetSimpleDistribution(Int32 numberOfWorkers, Int32 amountOfWork)
         {
+            var array = Enumerable.Range(1, numberOfWorkers * amountOfWork).ToArray();
+            Shake(array);
+
             var result = new Int32[numberOfWorkers][];
 
             for (Int32 i = 0; i < numberOfWorkers; i++)
@@ -47,7 +45,7 @@ namespace Task05
 
                 for (Int32 j = 0; j < amountOfWork; j++)
                 {
-                    result[i][j] = -(1 + j + amountOfWork * i);
+                    result[i][j] = array[j + amountOfWork * i];
                 }
             }
 
