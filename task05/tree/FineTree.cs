@@ -56,41 +56,6 @@ namespace Task05
             place.nodeLock.Release();
         }
 
-        protected override V DeleteRootOf(FinePlace subtree)
-        {
-            var oldRoot = subtree.node;
-
-            Sync(oldRoot.right);
-            Sync(oldRoot.left);
-
-            if (oldRoot.right.node == null)
-            {
-                subtree.node = oldRoot.left.node;
-            } else if (oldRoot.left.node == null)
-            {
-                subtree.node = oldRoot.right.node;
-            }
-            else
-            {
-                var newRoot = oldRoot.right;
-                Sync(newRoot.node.left);
-
-                while (newRoot.node.left.node != null)
-                {
-                    newRoot = newRoot.node.left;
-                    Sync(newRoot.node.left);
-                }
-
-                Sync(newRoot.node.right);
-                subtree.node = newRoot.node;
-                newRoot.node = newRoot.node.right.node;
-                subtree.node.right.node = oldRoot.right.node;
-                subtree.node.left.node = oldRoot.left.node;
-            }
-
-            return oldRoot.value;
-        }
-
         protected Boolean IsValid(FinePlace place)
         {
             if (!place.nodeLock.Wait(0))

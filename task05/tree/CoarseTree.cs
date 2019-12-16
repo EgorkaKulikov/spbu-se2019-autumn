@@ -38,36 +38,6 @@ namespace Task05
             mutex.ReleaseMutex();
         }
 
-        protected override V DeleteRootOf(CoarsePlace subtree)
-        {
-            var oldRoot = subtree.node;
-
-            if (oldRoot.right.node == null)
-            {
-                subtree.node = oldRoot.left.node;
-            }
-            else if (oldRoot.left.node == null)
-            {
-                subtree.node = oldRoot.right.node;
-            }
-            else
-            {
-                var newRoot = oldRoot.right;
-
-                while (newRoot.node.left.node != null)
-                {
-                    newRoot = newRoot.node.left;
-                }
-
-                subtree.node = newRoot.node;
-                newRoot.node = newRoot.node.right.node;
-                subtree.node.right.node = oldRoot.right.node;
-                subtree.node.left.node = oldRoot.left.node;
-            }
-
-            return oldRoot.value;
-        }
-
         protected Boolean IsValid(CoarsePlace place)
         {
             if (place.node == null)

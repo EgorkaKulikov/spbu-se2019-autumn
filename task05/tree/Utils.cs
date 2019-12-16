@@ -5,11 +5,12 @@ namespace Task05
 {
     public static class Utils
     {
-        public static void FillBalanced(ITree<Int32, Int32> tree, Int32 height)
+        public static void FillBalanced(ITree<Int32, Int32> tree, Int32 height, Int32 fillHeight)
         {
             Int32 size = (1 << height) - 1;
+            Int32 maxDenumerator = 1 << fillHeight;
 
-            for (Int32 denumerator = 2; denumerator <= size + 1; denumerator <<= 1)
+            for (Int32 denumerator = 2; denumerator <= maxDenumerator; denumerator <<= 1)
             {
                 for (Int32 numerator = 1; numerator < denumerator; numerator += 2)
                 {
@@ -65,25 +66,6 @@ namespace Task05
                     foreach (var index in indices)
                     {
                         tree.Add(index, index + 1);
-                    }
-                });
-            }
-
-            return tasks;
-        }
-
-        public static Task[] GetDeletionTasks(ITree<Int32, Int32> tree, Int32[][] distribution)
-        {
-            var tasks = new Task[distribution.Length];
-
-            for (Int32 i = 0; i < distribution.Length; i++)
-            {
-                var indices = distribution[i];
-                tasks[i] = new Task(() =>
-                {
-                    foreach (var index in indices)
-                    {
-                        tree.Delete(index);
                     }
                 });
             }

@@ -22,12 +22,12 @@ namespace Task05
                 tree = new FineTree<Int32, Int32>();
             }
 
-            var height = 25;
+            var height = 26;
             var size = (1 << height) - 1;
-            var maxIndex = size << 1;
+            var fillSize = (1 << (height - 1)) - 1;
             var random = new Random();
 
-            Utils.FillBalanced(tree, height);
+            Utils.FillBalanced(tree, height, height - 1);
 
             Task[] tasks = new Task[numberOfWorkers];
 
@@ -37,21 +37,10 @@ namespace Task05
                 {
                     for (var i = 0; i < amountOfWork; i++)
                     {
-                        var action = random.Next(0, 1);
+                        var num = random.Next(1, size) & 0;
+                        var index = 1 + size * (num + 1) / (size + 1);
 
-                        if (0 == action)
-                        {
-                            var index = random.Next(size + 1, maxIndex);
-
-                            tree.Add(index, index + 1);
-                        }
-                        else
-                        {
-                            var num = random.Next(1, size) & 0;
-                            var index = 1 + size * num / (size + 1);
-
-                            tree.Delete(index);
-                        }
+                        tree.Add(index, index + 1);
                     }
                 });
             }

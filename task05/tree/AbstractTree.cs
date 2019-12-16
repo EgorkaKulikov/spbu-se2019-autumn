@@ -6,7 +6,6 @@ namespace Task05
     {
         V Add(K key, V value);
         V Find(K key);
-        V Delete(K key);
         Boolean IsValid();
     }
 
@@ -36,7 +35,6 @@ namespace Task05
         protected abstract NP Root { get; }
         protected abstract NP CreatePlace();
         protected abstract NP FindPlace(K key);
-        protected abstract V DeleteRootOf(NP place);
         protected abstract void ReleasePlace(NP place);
         public abstract Boolean IsValid();
 
@@ -66,20 +64,6 @@ namespace Task05
             else
             {
                 result = place.node.value;
-            }
-
-            ReleasePlace(place);
-            return result;
-        }
-
-        public V Delete(K key)
-        {
-            var place = FindPlace(key);
-
-            V result = default;
-            if (place.node != null)
-            {
-                result = DeleteRootOf(place);
             }
 
             ReleasePlace(place);
