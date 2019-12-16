@@ -21,7 +21,7 @@ namespace Task05
         }
 
         [Fact]
-        public void SimpleFindTest()
+        public void RootInsertionTest()
         {
             var tree = CreateTree();
 
@@ -31,10 +31,24 @@ namespace Task05
             Assert.Equal(2, value);
         }
 
+        [Fact]
+        public void SimpleInsertionTest()
+        {
+            var tree = CreateTree();
+            tree.Add(1, 2);
+            tree.Add(2, 3);
+
+            var value1 = tree.Find(1);
+            var value2 = tree.Find(2);
+
+            Assert.Equal(2, value1);
+            Assert.Equal(3, value2);
+        }
+
         [Theory]
         [InlineData(1, 1000)]
         [InlineData(10, 1000)]
-        public void InsertionTest(Int32 numberOfWorkers, Int32 amountOfWork)
+        public void ParallelInsertionTest(Int32 numberOfWorkers, Int32 amountOfWork)
         {
             var tree = CreateTree();
             var distribution = Utils.GetSimpleDistribution(numberOfWorkers, amountOfWork);
@@ -47,8 +61,6 @@ namespace Task05
                     Assert.Equal(index + 1, tree.Find(index));
                 }
             }
-
-            //Assert.True(tree.IsValid());
         }
     }
 }
