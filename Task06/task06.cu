@@ -97,32 +97,62 @@ void bitonic_sort_gpu(int *arr, int cnt) {
 }
 #pragma endregion GPU
 
+bool test(int *arr, int cnt)
+{
+	bool is_sorted = true;
+	for (int i = 0; i < cnt; i++)
+	{
+		if (arr[i - 1] > arr[i])
+		{
+			is_sorted = false;
+		}
+	}
+
+	if (is_sorted) {
+		std::cout << "Array is sorted" << std::endl;
+		return 0;
+	}
+	else
+	{
+		std::cout << "Array is not sorted" << std::endl;
+		return 1;
+	}
+}
+
 int main()
 {
 	int cnt = 0;
-	const int n = pow(2, 20);
+	char mode;
+	const int n = pow(2, 18);
 	int *arr = (int*)malloc(1e9 * sizeof(int));
 	for (cnt = 0; cnt < n; cnt++)
 	{
 		arr[cnt] = rand() % 10000;
 	}
 
-#pragma region cpu_time
-	auto begin = std::chrono::steady_clock::now();
-	bitonic_sort_cpu(arr, 0, cnt, 1);
-	auto end = std::chrono::steady_clock::now();
+	std::cin >> mode;
+	if (mode == 'c')
+	{
+		auto begin_cpu = std::chrono::steady_clock::now();
+		bitonic_sort_cpu(arr, 0, cnt, 1);
+		auto end_cpu = std::chrono::steady_clock::now();
 
-	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-	std::cout << "The time: " << elapsed_ms.count() << " ms\n";
-#pragma endregion cpu_time
+		auto elapsed_ms_cpu = std::chrono::duration_cast<std::chrono::milliseconds>(end_cpu - begin_cpu);
+		std::cout << "The cpu_time: " << elapsed_ms_cpu.count() << " ms\n";
 
-#pragma region gpu_time
-	auto begin = std::chrono::steady_clock::now();
-	bitonic_sort_gpu(arr, cnt);
-	auto end = std::chrono::steady_clock::now();
+		test(arr, cnt);
+	}
 
-	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-	std::cout << "The time: " << elapsed_ms.count() << " ms\n";
-#pragma endregion gpu_time
+	if (mode == 'g')
+	{
+		auto begin_gpu = std::chrono::steady_clock::now();
+		bitonic_sort_gpu(arr, cnt);
+		auto end_gpu = std::chrono::steady_clock::now();
+
+		auto elapsed_ms_gpu = std::chrono::duration_cast<std::chrono::milliseconds>(end_gpu - begin_gpu);
+		std::cout << "The gpu_time: " << elapsed_ms_gpu.count() << " ms\n";
+
+		test(arr, cnt);
+	}
     return 0;
 }
