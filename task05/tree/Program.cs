@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -27,7 +28,13 @@ namespace Task05
 
             tasks = Utils.GetInsertionTasks(tree, distribution);
 
+            var stopwatch = new Stopwatch();
+
+            stopwatch.Start();
             Utils.RunAll(tasks);
+            stopwatch.Stop();
+
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
         }
     }
 }
