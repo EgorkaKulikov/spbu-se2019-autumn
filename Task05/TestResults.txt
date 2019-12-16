@@ -1,0 +1,48 @@
+Group Name: Task05
+Group By: Hierarchy
+Group Full Name: Task05
+Duration: 0:00:10,705
+0 test(s) failed
+0 test(s) skipped
+5 test(s) passed
+
+Result1 Name:	ConcInsertionRemovalTestCG
+Result1 Outcome:	Passed
+Result1 Duration:	0:00:00,318
+Result1 StackTrace:
+Result1 Message:
+Result1 StandardOutput:
+Result1 StandardError:
+
+Result2 Name:	InsertionRemovalTestCG
+Result2 Outcome:	Passed
+Result2 Duration:	0:00:01,258
+Result2 StackTrace:
+Result2 Message:
+Result2 StandardOutput:
+Result2 StandardError:
+
+Result3 Name:	InsertionRemovalTestFG
+Result3 Outcome:	Passed
+Result3 Duration:	0:00:03,92
+Result3 StackTrace:
+Result3 Message:
+Result3 StandardOutput:
+Result3 StandardError:
+
+Result4 Name:	InsertionSearchingTestCG
+Result4 Outcome:	Passed
+Result4 Duration:	0:00:01,141
+Result4 StackTrace:
+Result4 Message:
+Result4 StandardOutput:
+Result4 StandardError:
+
+Result5 Name:	InsertionSearchingTestFG
+Result5 Outcome:	Passed
+Result5 Duration:	0:00:04,068
+Result5 StackTrace:
+Result5 Message:
+Result5 StandardOutput:
+Result5 StandardError:
+
