@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>chart created with amCharts | amCharts</title>
+		<meta name="description" content="chart created using amCharts live editor" />
+		
+		<!-- amCharts javascript sources -->
+		<script type="text/javascript" src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+		<script type="text/javascript" src="https://www.amcharts.com/lib/3/serial.js"></script>
+		
+
+		<!-- amCharts javascript code -->
+		<script type="text/javascript">
+			AmCharts.makeChart("chartdiv",
+				{
+					"type": "serial",
+					"categoryField": "category",
+					"startDuration": 1,
+					"processCount": 1014,
+					"categoryAxis": {
+						"gridPosition": "start"
+					},
+					"trendLines": [],
+					"graphs": [
+						{
+							"balloonText": "[[title]] of [[category]]:[[value]]",
+							"bullet": "round",
+							"id": "AmGraph-1",
+							"title": "CPU",
+							"type": "smoothedLine",
+							"valueField": "CPU"
+						},
+						{
+							"balloonText": "[[title]] of [[category]]:[[value]]",
+							"bullet": "square",
+							"id": "AmGraph-2",
+							"tabIndex": 1,
+							"title": "GPU",
+							"type": "smoothedLine",
+							"valueField": "GPU"
+						}
+					],
+					"guides": [],
+					"valueAxes": [
+						{
+							"id": "ValueAxis-2",
+							"title": "Time (Sec)"
+						}
+					],
+					"allLabels": [],
+					"balloon": {},
+					"legend": {
+						"enabled": true,
+						"useGraphSettings": true
+					},
+					"titles": [],
+					"dataProvider": [
+						{
+							"category": "stmt 200 obs 20",
+							"GPU": "1.093",
+							"CPU": "0.006"
+						},
+						{
+							"category": "stmt 1000 obs 100",
+							"GPU": "1.472",
+							"CPU": "1.468"
+						},
+						{
+							"category": "stmt 2000 obs 200",
+							"GPU": "2.3",
+							"CPU": "14.6"
+						},
+						{
+							"category": "stmt 4000 obs 400",
+							"GPU": "6.28",
+							"CPU": "92.88"
+						}
+					]
+				}
+			);
+		</script>
+	</head>
+	<body>
+		<div id="chartdiv" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
+	</body>
+</html>
