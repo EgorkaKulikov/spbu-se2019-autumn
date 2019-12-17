@@ -10,8 +10,8 @@ namespace Task05
         static void Main(String[] args)
         {
             var type = args[0];
-            var amountOfWork = Int32.Parse(args[1]);
-            var numberOfWorkers = 8;
+            var numberOfWorkers = Int32.Parse(args[1]);
+            var amountOfWork = 1000;
             ITree<Int32, Int32> tree;
 
             if (type == "coarse")
