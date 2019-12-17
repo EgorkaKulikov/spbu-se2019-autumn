@@ -40,7 +40,7 @@ namespace Task02
         {
             var edges = getEdges(graph, size);
             int weight = 0;
-            quickSort(edges, 0, size-1);
+            quickSort(edges, 0, edges.Count-1);
             int[] treeId = new int[size];
             for (int i = 0; i < size; i++)
                 treeId[i] = i;
@@ -63,12 +63,13 @@ namespace Task02
         {
             if (left < right)
             {
-                int leftptr = left, rightptr = right;
-                int middle = (leftptr + rightptr) / 2;
+                int leftptr = left;
+                int rightptr = right;
+                var middle = edges[(leftptr + rightptr) / 2];
                 do
                 {
-                    while (edges[middle].weight > edges[leftptr].weight) leftptr++;
-                    while (edges[rightptr].weight > edges[middle].weight) rightptr--;
+                    while (middle.weight > edges[leftptr].weight) leftptr++;
+                    while (edges[rightptr].weight > middle.weight) rightptr--;
                     if (leftptr <= rightptr)
                     {
                         var tmp = edges[leftptr];
@@ -78,13 +79,13 @@ namespace Task02
                         rightptr--;
                     }
                 } while (leftptr <= rightptr);
-
+                
                 Task leftSort = Task.Run(() => quickSort(edges, left, rightptr));
                 Task rightSort = Task.Run(() => quickSort(edges, leftptr, right));
                 Task.WaitAll(leftSort, rightSort);
             }
         }
-        
+
 
         public void printResult(int[,] graph, int size)
         {
@@ -95,4 +96,4 @@ namespace Task02
             }
         }
     }
-}
+} 
