@@ -42,17 +42,20 @@ int main()
 			memcpy(temp_arr, arr, arr_size);
 			start = clock();
 			bitonic_sort(temp_arr, log_len);
-			cpu_exec_time += get_exec_time(start, clock()) / NUM_MEASUREMENTS;
+			cpu_exec_time += get_exec_time(start, clock());
 
 			//GPU version measurement
 			memcpy(temp_arr, arr, arr_size);
 			start = clock();
 			bitonic_sort_gpu(temp_arr, log_len);
-			gpu_exec_time += get_exec_time(start, clock()) / NUM_MEASUREMENTS;
+			gpu_exec_time += get_exec_time(start, clock());
 		}
 
+		double cpu_avg_time = cpu_exec_time / NUM_MEASUREMENTS;
+		double gpu_avg_time = gpu_exec_time / NUM_MEASUREMENTS;
+
 		//Measurements output for gnuplot
-		fprintf(output, "%d %f %f\n", arr_len, gpu_exec_time, cpu_exec_time);
+		fprintf(output, "%d %f %f\n", arr_len, gpu_avg_time, cpu_avg_time);
 		free(arr);
 		free(temp_arr);
 	}
