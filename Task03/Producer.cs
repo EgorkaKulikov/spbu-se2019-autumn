@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Task03
 {
-    class Producer<T> where T : new()
+    class Producer<T> where T : struct
     {
         string name;
         Buffer<T> buffer;
@@ -41,7 +41,12 @@ namespace Task03
 
         T SomeWork()
         {
-            Thread.Sleep(GeneralResources.random.Next(GeneralResources.workTimeProducer.Item1, GeneralResources.workTimeProducer.Item2));
+            Thread.Sleep(
+                GeneralResources.random.Next(
+                    GeneralResources.workTimeProducer.Item1,
+                    GeneralResources.workTimeProducer.Item2
+                    )
+                );
             return new T();
         }
 
