@@ -1,0 +1,1 @@
+void bitonicSortGpu(int *hostValues, int numVals);
