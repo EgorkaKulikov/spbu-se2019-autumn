@@ -230,7 +230,6 @@ int* viterbi(double initialDistribution[], int observations[], double** Transiti
 			}
 
 			MIndex[j][i] = indMax;
-			printf("%d ",indMax);
 		}
 	}
 
