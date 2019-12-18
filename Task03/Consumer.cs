@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Task03
 {
-    class Consumer<T> where T : new()
+    class Consumer<T> where T : struct
     {
         string name;
         Buffer<T> buffer;
@@ -40,15 +40,20 @@ namespace Task03
 
         void SomeWork(T data)
         {
-            Thread.Sleep(GeneralResources.random.Next(GeneralResources.workTimeConsumer.Item1, GeneralResources.workTimeConsumer.Item2));
+            Thread.Sleep(
+                GeneralResources.random.Next(
+                    GeneralResources.workTimeConsumer.Item1,
+                    GeneralResources.workTimeConsumer.Item2
+                    )
+                );
         }
 
         bool GetData()
         {
-            Maybe<T> newData = buffer.Pop();
-            if (newData != Maybe<T>.Nothing)
+            T? newData = buffer.Pop();
+            if (newData != null)
             {
-                SomeWork(newData.getValue());
+                SomeWork(newData.Value);
                 return true;
             }
             else
