@@ -1,0 +1,1 @@
+void gpu_sort(int *array, int size);
