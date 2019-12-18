@@ -1,0 +1,4 @@
+Sequential Kruskal: 1458165
+Parallel Kruskal: 1458165
+Sequential Prim: 1458165
+Parallel Prim: 1458165
