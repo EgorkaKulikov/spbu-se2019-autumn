@@ -11,6 +11,6 @@ namespace Task03
         public static int amountConsumers = 1;
         public static int amountProducers = 3;
         public static int amountWorkingProducers = 0;
-        public static Buffer<object> mainBuffer = new Buffer<object>();
+        public static Buffer<int> mainBuffer = new Buffer<int>();
     }
 }
