@@ -7,12 +7,11 @@
 #include <float.h>
 #include <iostream>
 
-#define STATES_NUM 2000
-#define OBSERVATIONS_NUM 2000
+#define STATES_NUM 30
+#define OBSERVATIONS_NUM 30
 #define RANDOMIZER_ACCURACY 10000
 #define BLOCK_SIZE 1024
 
-//Почти всегда == 1, т.к. много состояний не лезет в память (при BLOCK_SIZE == 1024)
 const int BLOCK_NUM = STATES_NUM / BLOCK_SIZE + 1;
 
 double min4(double a, double b, double c, double d);
@@ -23,35 +22,46 @@ void generateEmissions(double** Emissions);
 int* viterbi(double initialDistribution[], int observations[], double** Transitions, double** Emissions);
 int* viterbiGPU(double initialDistribution[], int observations[], double** Transitions, double** Emissions);
 
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort = true)
+{
+	if (code != cudaSuccess)
+	{
+		fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+		if (abort) 
+			exit(code);
+	}
+}
+
 int main()
 {
-	//Массив начальных вероятностей
-	//(вероятность того, в начальный момент времени состояние было S_i)
+	//Initial probability array
+	//(the probability of the initial state being S_i)
 	double* initialDistribution = new double[STATES_NUM];
 
-	//Последовательность наблюдений
+	//Sequence of observations
 	int* observations = new int[OBSERVATIONS_NUM];
 
-	//Матрица вероятностей перехода из i-го состояния в j-тое
+	//Transition probability matrix
 	double** Transitions = new double* [STATES_NUM];
 	for (int i = 0; i < STATES_NUM; i++)
 		Transitions[i] = new double[STATES_NUM];
 
-	//Матрица вероятностей наблюдения O_j из состояния S_i
+	//Probability matrix of observation O_j from state S_i
 	double** Emissions = new double* [STATES_NUM];
 	for (int i = 0; i < STATES_NUM; i++)
 		Emissions[i] = new double[STATES_NUM];
 
-	//Как показывает практика, начальное распределение мало на что влияет,
-	//поэтому сделаем его нормальным (ну почти)
+	// Practice shows that the initial distribution has little effect on
+	// therefore make it almost normal
 	fillInitialDistribution(initialDistribution);
 
 	generateObservations(observations);
 
-	//Сгенерируем дважды стохастическую матрицу переходов
+	//Generate double-stochastic transition matrix
 	generateTransitions(Transitions);
 
-	//И стохастическую по столбцам матрицу эмиссии
+	//And a column-stochastic emission matrix
 	generateEmissions(Emissions);
 
 	clock_t start, end;
@@ -91,7 +101,7 @@ double min4(double a, double b, double c, double d)
 	return min;
 }
 
-//(Да, это, наверное, костыльный монстр, но я не придумал ничего лучше)
+//(Yes, this is probably a crutch monster, but I didn't come up with anything better)
 void generateTransitions(double** Transitions)
 {
 	double n = 1.0 / STATES_NUM;
@@ -118,7 +128,7 @@ void generateTransitions(double** Transitions)
 				1 - Transitions[STATES_NUM - i - 1][randomIndex])
 				/ 2;
 
-			//delta - случайное чило от 0 до maxDelta
+			//delta - random number from 0 to maxDelta
 			double delta = (double)(rand() % (RANDOMIZER_ACCURACY + 1)) / RANDOMIZER_ACCURACY * maxDelta;
 			Transitions[i][j] -= delta;
 			Transitions[STATES_NUM - i - 1][STATES_NUM - j - 1] -= delta;
@@ -156,7 +166,7 @@ void generateEmissions(double** Emissions)
 
 			double maxDelta = min / 2;
 
-			//delta - случайное чило от 0 до maxDelta
+			//delta - random number from 0 to maxDelta
 			double delta = (double)(rand() % (RANDOMIZER_ACCURACY + 1)) / RANDOMIZER_ACCURACY * maxDelta;
 			Emissions[i][j] -= delta;
 			Emissions[i][randomIndex] += delta;
@@ -180,34 +190,34 @@ void fillInitialDistribution(double* initialDistribution)
 		initialDistribution[i] = n;
 		sum += n;
 	}
-	//При делении может накапливаться погрешность, поэтому сделаем так
+	//When dividing, an error can accumulate, so let's do this
 	initialDistribution[STATES_NUM - 1] = 1 - sum;
 }
 
-//Слегка облегчённая версия, но параллелится не очень
+//Slightly light version, but it doesn't parallel very well
 int* viterbi(double initialDistribution[], int observations[], double** Transitions, double** Emissions)
 {
-	//Матрица вероятностей того, что на j-том шаге мы находимся в состоянии S_i
+	//Probability matrix for the fact that at the j-th step we are in the state S_i
 	double** MState = new double* [STATES_NUM];
 	for (int i = 0; i < STATES_NUM; i++)
 		MState[i] = new double[OBSERVATIONS_NUM];
 
-	//Матрица индексов наиболее вероятных состояний на j - 1 шаге
+	//Index matrix of the most probable states at j - 1 step
 	int** MIndex = new int* [STATES_NUM];
 	for (int i = 0; i < STATES_NUM; i++)
 		MIndex[i] = new int[OBSERVATIONS_NUM];
 
-	//Заполняем первый столбец на основе начальных данных
+	//Fill the first column based on the initial data
 	for (int i = 0; i < STATES_NUM; i++)
 	{
 		MState[i][0] = initialDistribution[i] * Emissions[i][observations[i]];
 		MIndex[i][0] = 0;
 	}
 
-	//Заполняем последующие
+	//Fill in the following
 	for (int i = 1; i < OBSERVATIONS_NUM; i++) {
 		for (int j = 0; j < STATES_NUM; j++) {
-			//Ищем индекс, при котором максимизируется func
+			//We are looking for an index at which func is maximized
 			int indMax = -1;
 			for (int k = 0; k < STATES_NUM; k++)
 			{
@@ -220,13 +230,14 @@ int* viterbi(double initialDistribution[], int observations[], double** Transiti
 			}
 
 			MIndex[j][i] = indMax;
+			printf("%d ",indMax);
 		}
 	}
 
 	double max = -1;
 	int* result = new int[OBSERVATIONS_NUM];
 
-	//Вносим индекс последнего состояния
+	//Select the index of the last state
 	for (int i = 0; i < STATES_NUM; i++)
 	{
 		if (MState[i][OBSERVATIONS_NUM - 1] > max)
@@ -236,7 +247,7 @@ int* viterbi(double initialDistribution[], int observations[], double** Transiti
 		}
 	}
 
-	//Заполняем остальные
+	//Fill the rest
 	for (int i = OBSERVATIONS_NUM - 2; i > 0; i--)
 		result[i] = MIndex[result[i + 1]][i + 1];
 
@@ -250,8 +261,6 @@ int* viterbi(double initialDistribution[], int observations[], double** Transiti
 
 	return result;
 }
-
-//Дальше комментов не будет( я усталь
 
 __global__
 void viterbiGPU_forward(double* MState, double* Transitions, double* Emissions, int* Observations, int i) 
@@ -295,7 +304,10 @@ void copyMatrixFromDevice(double** matrix, double* deviceMatrix, int ROWS_NUM, i
 {
 	double** temp = new double *[ROWS_NUM * COLUMN_NUM];
 
-	cudaMemcpy(temp, deviceMatrix, ROWS_NUM * COLUMN_NUM * sizeof(double), cudaMemcpyDeviceToHost);
+	gpuErrchk(
+		cudaMemcpy(temp, deviceMatrix, ROWS_NUM * COLUMN_NUM * sizeof(double), cudaMemcpyDeviceToHost)
+	);
+
 	for (int i = 0; i < ROWS_NUM; i++)
 		memcpy(matrix[i], temp + i * COLUMN_NUM, COLUMN_NUM * sizeof(double));
 	
@@ -308,7 +320,10 @@ void copyMatrixToDevice(double **matrix, double *deviceMatrix, int ROWS_NUM, int
 
 	for (int i = 0; i < ROWS_NUM; i++)
 		memcpy(temp + i * COLUMN_NUM, matrix[i], COLUMN_NUM * sizeof(double));
-	cudaMemcpy(deviceMatrix, temp, ROWS_NUM * COLUMN_NUM * sizeof(double), cudaMemcpyHostToDevice);
+
+	gpuErrchk(
+		cudaMemcpy(deviceMatrix, temp, ROWS_NUM * COLUMN_NUM * sizeof(double), cudaMemcpyHostToDevice)
+	);
 
 	delete[] temp;
 }
@@ -320,7 +335,7 @@ int* viterbiGPU(double initialDistribution[], int observations[], double** Trans
 	for (int i = 0; i < STATES_NUM; i++)
 		MState[i] = new double[OBSERVATIONS_NUM];
 
-	for (int i = 0; i < STATES_NUM; i++) 
+	for (int i = 0; i < STATES_NUM; i++)
 		MState[0][i] = initialDistribution[i] * Emissions[i][observations[0]];
 
 	double** MIndex = new double* [OBSERVATIONS_NUM];
@@ -328,46 +343,62 @@ int* viterbiGPU(double initialDistribution[], int observations[], double** Trans
 		MIndex[i] = new double[STATES_NUM];
 
 	int* deviceObservations;
-		cudaMalloc(&deviceObservations, OBSERVATIONS_NUM * sizeof(int));
+	gpuErrchk(
+		cudaMalloc(&deviceObservations, OBSERVATIONS_NUM * sizeof(int))
+	);
 
 	double* deviceTransitions;
-		cudaMalloc(&deviceTransitions, STATES_NUM * STATES_NUM * sizeof(double));
+	gpuErrchk(
+		cudaMalloc(&deviceTransitions, STATES_NUM * STATES_NUM * sizeof(double))
+	);
 
 	double* deviceEmissions;
-		cudaMalloc(&deviceEmissions, STATES_NUM * STATES_NUM * sizeof(double));
+	gpuErrchk(
+		cudaMalloc(&deviceEmissions, STATES_NUM * STATES_NUM * sizeof(double))
+	);
 
 	double* deviceMState;
-		cudaMalloc(&deviceMState, STATES_NUM * OBSERVATIONS_NUM * sizeof(double));
+	gpuErrchk(
+		cudaMalloc(&deviceMState, STATES_NUM * OBSERVATIONS_NUM * sizeof(double))
+	);
 
 	double* deviceMIndex;
-		cudaMalloc(&deviceMIndex, STATES_NUM * OBSERVATIONS_NUM * sizeof(double));
+	gpuErrchk(
+		cudaMalloc(&deviceMIndex, STATES_NUM * OBSERVATIONS_NUM * sizeof(double))
+	);
 
-	cudaMemcpy(deviceObservations, observations, OBSERVATIONS_NUM * sizeof(int), cudaMemcpyHostToDevice);
+	gpuErrchk(
+		cudaMemcpy(deviceObservations, observations, OBSERVATIONS_NUM * sizeof(int), cudaMemcpyHostToDevice)
+	);
 	copyMatrixToDevice(Transitions, deviceTransitions, STATES_NUM, STATES_NUM);
 	copyMatrixToDevice(Emissions, deviceEmissions, STATES_NUM, STATES_NUM);
 	copyMatrixToDevice(MState, deviceMState, STATES_NUM, OBSERVATIONS_NUM);
 	copyMatrixToDevice(MIndex, deviceMIndex, STATES_NUM, OBSERVATIONS_NUM);
 
-	cudaDeviceSynchronize();
+	gpuErrchk( cudaDeviceSynchronize() );
 
 	for (int i = 1; i < OBSERVATIONS_NUM; i++) 
 	{
 		viterbiGPU_forward<<<BLOCK_NUM, BLOCK_SIZE>>>
 			(deviceMState, deviceTransitions, deviceEmissions, deviceObservations, i);
-		cudaDeviceSynchronize();
+		gpuErrchk( cudaPeekAtLastError() );
+		gpuErrchk( cudaDeviceSynchronize() );
 	}
-	for (int i = 0; i < OBSERVATIONS_NUM; i++) 
-		viterbiGPU_back<<<BLOCK_NUM, BLOCK_SIZE>>>
+	for (int i = 0; i < OBSERVATIONS_NUM; i++)
+	{
+		viterbiGPU_back <<<BLOCK_NUM, BLOCK_SIZE>>>
 			(deviceMState, deviceTransitions, deviceMIndex, i);
+		gpuErrchk( cudaPeekAtLastError() );
+	}
 
 	copyMatrixFromDevice(MState, deviceMState, OBSERVATIONS_NUM, STATES_NUM);
 	copyMatrixFromDevice(MIndex, deviceMIndex, OBSERVATIONS_NUM, STATES_NUM);
 
-	cudaFree(deviceMIndex);
-	cudaFree(deviceMState);
-	cudaFree(deviceTransitions);
-	cudaFree(deviceEmissions);
-	cudaFree(deviceObservations);
+	gpuErrchk( cudaFree(deviceMIndex) );
+	gpuErrchk( cudaFree(deviceMState) );
+	gpuErrchk( cudaFree(deviceEmissions) );
+	gpuErrchk( cudaFree(deviceTransitions) );
+	gpuErrchk( cudaFree(deviceObservations) );
 
 	double max = -1;
 	int* result = new int[OBSERVATIONS_NUM];
