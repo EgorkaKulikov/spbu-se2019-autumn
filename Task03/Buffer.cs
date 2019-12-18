@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Task03
 {
-    class Buffer<T> where T: new()
+    class Buffer<T> where T: struct
     {
         Mutex mutBuffer;
         Queue<T> queue;
@@ -21,17 +21,20 @@ namespace Task03
             mutBuffer.ReleaseMutex();
         }
 
-        public Maybe<T> Pop()
+        public T? Pop()
         {
             mutBuffer.WaitOne();
-            Maybe<T> res = queue.Count > 0 ? Maybe<T>.Just(queue.Dequeue()) : Maybe<T>.Nothing;
+            T? res = queue.Count > 0 ? queue.Dequeue() : (T?)null;
             mutBuffer.ReleaseMutex();
             return res;
         }
 
         public bool IsEmpty()
         {
-            return queue.Count == 0;
+            mutBuffer.WaitOne();
+            bool res = queue.Count == 0;
+            mutBuffer.ReleaseMutex();
+            return res;
         }
     }
 }
