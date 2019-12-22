@@ -2,7 +2,7 @@
 
 namespace Task05
 {
-    public class FineBinaryTree
+    public class OptimisticBinaryTree
     {
         public class Node
         {
@@ -58,28 +58,21 @@ namespace Task05
                 return null;
 
             var tempNode = root;
-            tempNode.mutex.WaitOne();
 
             while(tempNode != null) 
             {
                 if (tempNode.key == key)
-                {
-                    int val = tempNode.value;
-                    tempNode.mutex.ReleaseMutex();
-                    return val;
+                { 
+                    return tempNode.value;
                 }
                 else if (tempNode.key > key)
                 {
                     if (tempNode.left != null)
                     {
-                        var tmp = tempNode;
-                        tempNode.left.mutex.WaitOne();
                         tempNode = tempNode.left;
-                        tmp.mutex.ReleaseMutex();
                     }
                     else
                     {
-                        tempNode.mutex.ReleaseMutex();
                         break;
                     }
                 }
@@ -87,14 +80,10 @@ namespace Task05
                 {
                     if (tempNode.right != null)
                     {
-                        var tmp = tempNode;
-                        tempNode.right.mutex.WaitOne();
                         tempNode = tempNode.right;
-                        tmp.mutex.ReleaseMutex();
                     }
                     else
                     {
-                        tempNode.mutex.ReleaseMutex();
                         break;
                     }
                 }
@@ -117,7 +106,6 @@ namespace Task05
                 rootMutex.ReleaseMutex();
             }
 
-            root.mutex.WaitOne();
             var tempNode = root;
             while (true)
             {
@@ -125,40 +113,42 @@ namespace Task05
                 {
                     if (tempNode.left == null)
                     {
-                        var newNode = new Node(key, value);
-                        tempNode.left = newNode;
+                        tempNode.mutex.WaitOne();
+                        if (tempNode.left == null)
+                        {
+                            var newNode = new Node(key, value);
+                            tempNode.left = newNode;
+                            tempNode.mutex.ReleaseMutex();
+                            return;
+                        }
                         tempNode.mutex.ReleaseMutex();
-                        return;
                     }
                     else
                     {
-                        var tmp = tempNode;
-                        tempNode.left.mutex.WaitOne();
                         tempNode = tempNode.left;
-                        tmp.mutex.ReleaseMutex();
                     }
                 }
                 if (tempNode.key < key)
                 {
                     if (tempNode.right == null)
                     {
-                        var newNode = new Node(key, value);
-                        tempNode.right = newNode;
+                        tempNode.mutex.WaitOne();
+                        if (tempNode.right == null)
+                        {
+                            var newNode = new Node(key, value);
+                            tempNode.right = newNode;
+                            tempNode.mutex.ReleaseMutex();
+                            return;
+                        }
                         tempNode.mutex.ReleaseMutex();
-                        return;
                     }
                     else
                     {
-                        var tmp = tempNode;
-                        tempNode.right.mutex.WaitOne();
                         tempNode = tempNode.right;
-                        tmp.mutex.ReleaseMutex();
                     }
                 }
                 if (tempNode.key == key)
                 {
-                    tempNode.value = value;
-                    tempNode.mutex.ReleaseMutex();
                     return;
                 }
             }

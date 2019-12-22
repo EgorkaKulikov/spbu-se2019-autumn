@@ -6,14 +6,14 @@ using NUnit.Framework;
 
 namespace Task05
 {
-    public class FineTests
+    public class CoarsTests
     {
         [Test]
         public void MutexTest()
         {
             List<Tuple<int, int>> insertList = new List<Tuple<int, int>>();
             List<int> findList = new List<int>();
-            var tree = new FineBinaryTree();
+            var tree = new CoarseBinaryTree();
             var tasks = new List<Task>();
 
             for (int i = 0; i < 100; i++)
@@ -30,7 +30,7 @@ namespace Task05
                 tasks.Add(Task.Run(() => tree.find(key)));
 
             Task.WaitAll(tasks.ToArray());
-            Assert.True(tree.mutexesRealesed(tree.root));
+            Assert.True(tree.mutex.WaitOne());
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace Task05
         {
             List<Tuple<int, int>> insertList = new List<Tuple<int, int>>();
             List<int> findList = new List<int>();
-            var tree = new FineBinaryTree();
+            var tree = new CoarseBinaryTree();
             var tasks = new List<Task>();
 
             for (int i = 0; i < 100; i++)
@@ -61,7 +61,7 @@ namespace Task05
         [Test]
         public void findInsertTest()
         {
-            var tree = new FineBinaryTree();
+            var tree = new CoarseBinaryTree();
 
             Thread[] insertThreads = new Thread[10];
             Thread[] findThreads = new Thread[20];

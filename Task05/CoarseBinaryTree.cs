@@ -10,7 +10,7 @@ namespace Task05
             public int value;
             public Node left = null;
             public Node right = null;
-            
+
             public Node(int key, int value)
             {
                 this.key = key;
@@ -19,7 +19,7 @@ namespace Task05
         }
         public Node root = null;
         public Mutex mutex = new Mutex();
-        
+
         public bool isBinaryTree(Node node)
         {
             if (node == null)
@@ -34,8 +34,8 @@ namespace Task05
 
             return isBinaryTree(node.left) && isBinaryTree(node.right);
         }
-        
-        
+
+
 
         public int? find(int key)
         {
@@ -56,7 +56,7 @@ namespace Task05
                     tempNode = tempNode.right;
                 }
             }
-            
+
             mutex.ReleaseMutex();
             return null;
         }
@@ -111,4 +111,4 @@ namespace Task05
             }
         }
     }
-}
+} 
