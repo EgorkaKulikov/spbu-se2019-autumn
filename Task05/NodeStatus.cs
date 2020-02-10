@@ -1,6 +1,6 @@
 namespace Task05
 {
-    enum NodeStatus
+    public enum NodeStatus
     {
         NodeCreate,
         NodeUpdate,
