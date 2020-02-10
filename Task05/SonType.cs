@@ -1,6 +1,6 @@
 namespace Task05
 {
-    enum SonType
+    public enum SonType
     {
         LeftSon,
         RightSon,
