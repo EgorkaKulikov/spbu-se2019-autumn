@@ -1,0 +1,223 @@
+Generating array of size 100000000 elements
+Sorting on CPU
+Sorting time = 44167 ms.
+Sorting on GPU
+Sorting time = 6448 ms.
+Checking answers
+
+Generating array of size 50000000 elements
+Sorting on CPU
+Sorting time = 21100 ms.
+Sorting on GPU
+Sorting time = 3643 ms.
+Checking answers
+
+Generating array of size 25000000 elements
+Sorting on CPU
+Sorting time = 11036 ms.
+Sorting on GPU
+Sorting time = 2277 ms.
+Checking answers
+
+Generating array of size 75000000 elements
+Sorting on CPU
+Sorting time = 36606 ms.
+Sorting on GPU
+Sorting time = 5076 ms.
+Checking answers
+
+Generating array of size 12500000 elements
+Sorting on CPU
+Sorting time = 5141 ms.
+Sorting on GPU
+Sorting time = 1584 ms.
+Checking answers
+
+Generating array of size 37500000 elements
+Sorting on CPU
+Sorting time = 19316 ms.
+Sorting on GPU
+Sorting time = 2953 ms.
+Checking answers
+
+Generating array of size 62500000 elements
+Sorting on CPU
+Sorting time = 28316 ms.
+Sorting on GPU
+Sorting time = 4238 ms.
+Checking answers
+
+Generating array of size 87500000 elements
+Sorting on CPU
+Sorting time = 40159 ms.
+Sorting on GPU
+Sorting time = 5760 ms.
+Checking answers
+
+Generating array of size 6250000 elements
+Sorting on CPU
+Sorting time = 2748 ms.
+Sorting on GPU
+Sorting time = 1275 ms.
+Checking answers
+
+Generating array of size 18750000 elements
+Sorting on CPU
+Sorting time = 8117 ms.
+Sorting on GPU
+Sorting time = 1061 ms.
+Checking answers
+
+Generating array of size 31250000 elements
+Sorting on CPU
+Sorting time = 14055 ms.
+Sorting on GPU
+Sorting time = 2528 ms.
+Checking answers
+
+Generating array of size 43750000 elements
+Sorting on CPU
+Sorting time = 20833 ms.
+Sorting on GPU
+Sorting time = 3325 ms.
+Checking answers
+
+Generating array of size 56250000 elements
+Sorting on CPU
+Sorting time = 25321 ms.
+Sorting on GPU
+Sorting time = 3913 ms.
+Checking answers
+
+Generating array of size 68750000 elements
+Sorting on CPU
+Sorting time = 32614 ms.
+Sorting on GPU
+Sorting time = 4743 ms.
+Checking answers
+
+Generating array of size 81250000 elements
+Sorting on CPU
+Sorting time = 36743 ms.
+Sorting on GPU
+Sorting time = 5444 ms.
+Checking answers
+
+Generating array of size 93750000 elements
+Sorting on CPU
+Sorting time = 43493 ms.
+Sorting on GPU
+Sorting time = 6101 ms.
+Checking answers
+
+Generating array of size 3125000 elements
+Sorting on CPU
+Sorting time = 960 ms.
+Sorting on GPU
+Sorting time = 1137 ms.
+Checking answers
+
+Generating array of size 9375000 elements
+Sorting on CPU
+Sorting time = 4047 ms.
+Sorting on GPU
+Sorting time = 593 ms.
+Checking answers
+
+Generating array of size 15625000 elements
+Sorting on CPU
+Sorting time = 7095 ms.
+Sorting on GPU
+Sorting time = 866 ms.
+Checking answers
+
+Generating array of size 21875000 elements
+Sorting on CPU
+Sorting time = 11228 ms.
+Sorting on GPU
+Sorting time = 1214 ms.
+Checking answers
+
+Generating array of size 28125000 elements
+Sorting on CPU
+Sorting time = 13477 ms.
+Sorting on GPU
+Sorting time = 2391 ms.
+Checking answers
+
+Generating array of size 34375000 elements
+Sorting on CPU
+Sorting time = 16920 ms.
+Sorting on GPU
+Sorting time = 2781 ms.
+Checking answers
+
+Generating array of size 40625000 elements
+Sorting on CPU
+Sorting time = 19470 ms.
+Sorting on GPU
+Sorting time = 3090 ms.
+Checking answers
+
+Generating array of size 46875000 elements
+Sorting on CPU
+Sorting time = 21908 ms.
+Sorting on GPU
+Sorting time = 3410 ms.
+Checking answers
+
+Generating array of size 53125000 elements
+Sorting on CPU
+Sorting time = 24442 ms.
+Sorting on GPU
+Sorting time = 3802 ms.
+Checking answers
+
+Generating array of size 59375000 elements
+Sorting on CPU
+Sorting time = 26749 ms.
+Sorting on GPU
+Sorting time = 4066 ms.
+Checking answers
+
+Generating array of size 65625000 elements
+Sorting on CPU
+Sorting time = 29501 ms.
+Sorting on GPU
+Sorting time = 4404 ms.
+Checking answers
+
+Generating array of size 71875000 elements
+Sorting on CPU
+Sorting time = 33184 ms.
+Sorting on GPU
+Sorting time = 4906 ms.
+Checking answers
+
+Generating array of size 78125000 elements
+Sorting on CPU
+Sorting time = 35587 ms.
+Sorting on GPU
+Sorting time = 5307 ms.
+Checking answers
+
+Generating array of size 84375000 elements
+Sorting on CPU
+Sorting time = 38452 ms.
+Sorting on GPU
+Sorting time = 5601 ms.
+Checking answers
+
+Generating array of size 90625000 elements
+Sorting on CPU
+Sorting time = 40645 ms.
+Sorting on GPU
+Sorting time = 5983 ms.
+Checking answers
+
+Generating array of size 96875000 elements
+Sorting on CPU
+Sorting time = 44268 ms.
+Sorting on GPU
+Sorting time = 6284 ms.
+Checking answers
